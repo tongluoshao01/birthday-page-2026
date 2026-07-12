@@ -1540,7 +1540,7 @@ likeBtn.addEventListener('click',function(){
 
     var ln2=parseInt(localStorage.getItem('birthday_like_count')||'18')+1;localStorage.setItem('birthday_like_count',String(ln2));fetchLikes();
 
-    if(WL&&_wlOK!==false){wlSQL("INSERT INTO waline_comment (object_id,url) VALUES ('lk_'+Date.now()+'_'+Math.random().toString(36).substr(2,6),'"+likePath.replace(/'/g,"''")+"')",function(){fetchLikes();});}}
+    if(WL&&_wlOK!==false){wlSQL("INSERT INTO waline_comment (object_id,url,comment) VALUES ('lk_'+Date.now()+'_'+Math.random().toString(36).substr(2,6),'"+likePath.replace(/'/g,"''")+"','\u2764')",function(){fetchLikes();});}}
 
 });
 
