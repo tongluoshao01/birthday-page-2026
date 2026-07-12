@@ -1532,13 +1532,13 @@ likeBtn.addEventListener('click',function(){
 
   if(cachedLike){cachedLike=null;localStorage.removeItem('birthday_liked');likeBtn.classList.remove('liked');likeText.textContent='送出祝福';
 
-    var ln=Math.max(0,parseInt(localStorage.getItem('birthday_like_count')||'18')-1);localStorage.setItem('birthday_like_count',String(ln));fetchLikes();
+    var ln=Math.max(0,parseInt(localStorage.getItem('birthday_like_count')||'18')-1);localStorage.setItem('birthday_like_count',String(ln));likeCountEl.textContent=ln+' \u4eba\u53d1\u6765\u795d\u798f';
 
     if(WL&&_wlOK!==false){wlSQL("DELETE FROM waline_comment WHERE url='"+likePath.replace(/'/g,"''")+"' AND object_id IN (SELECT object_id FROM waline_comment WHERE url='"+likePath.replace(/'/g,"''")+"' ORDER BY inserted_at DESC LIMIT 1)",function(){fetchLikes();});}}
 
   else{cachedLike='1';localStorage.setItem('birthday_liked','1');likeBtn.classList.add('liked');likeText.textContent='已祝福';
 
-    var ln2=parseInt(localStorage.getItem('birthday_like_count')||'18')+1;localStorage.setItem('birthday_like_count',String(ln2));fetchLikes();
+    var ln2=parseInt(localStorage.getItem('birthday_like_count')||'18')+1;localStorage.setItem('birthday_like_count',String(ln2));likeCountEl.textContent=ln2+' \u4eba\u53d1\u6765\u795d\u798f';
 
     if(WL&&_wlOK!==false){wlSQL("INSERT INTO waline_comment (object_id,url,comment) VALUES ('lk_'+Date.now()+'_'+Math.random().toString(36).substr(2,6),'"+likePath.replace(/'/g,"''")+"','\u2764')",function(){fetchLikes();});}}
 
