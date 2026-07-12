@@ -1166,7 +1166,7 @@ footer .counter{margin-top:8px;font-size:.75rem;opacity:.6}
 
 var EK='birthday_env_opened';
 
-var WL='https://ep-super-mountain-aob5ntii-pooler.c-2.ap-southeast-1.aws.neon.tech/sql';var WL_CONN='postgresql://neondb_owner:npg_O1l9ifqKFcbz@ep-super-mountain-aob5ntii-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require';
+var WL='https://birthday-api.tongluoshao1.workers.dev';
 
 var _wlOK=null;
 
@@ -1179,8 +1179,6 @@ function wlSQL(query,cb){
   xhr.open('POST',WL,true);
 
   xhr.setRequestHeader('Content-Type','application/json');
-
-  xhr.setRequestHeader('neon-connection-string',WL_CONN);
 
   xhr.onload=function(){try{var r=JSON.parse(xhr.responseText);_wlOK=true;cb(r.rows||[],null);}catch(e){cb(null,e);}};
 
