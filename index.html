@@ -1957,7 +1957,7 @@ fetchMessages(renderMessages);
 var pvEl=document.getElementById('page-view-count');
 var PV_URL='/birthday-pageview';
 function updatePV(n){if(pvEl)pvEl.textContent=n;}
-if(WL){wlSQL("SELECT COUNT(*)::int AS cnt FROM waline_comment WHERE url='"+PV_URL.replace(/'/g,"''")+"'",function(rows,err){if(!err&&rows.length>0){updatePV(rows[0].cnt);}wlSQL("INSERT INTO waline_comment (object_id,url,comment) VALUES ('pv_'+Date.now()+'_'+Math.random().toString(36).substr(2,6),'"+PV_URL.replace(/'/g,"''")+"','pv')",function(){});});}else{updatePV(0);}
+if(WL){var _pvid='pv_'+Date.now()+'_'+Math.random().toString(36).substr(2,6);wlSQL("SELECT COUNT(*)::int AS cnt FROM waline_comment WHERE url='"+PV_URL.replace(/'/g,"''")+"'",function(rows,err){if(!err&&rows.length>0){updatePV(rows[0].cnt);}wlSQL("INSERT INTO waline_comment (object_id,url,comment) VALUES ('"+_pvid+"','"+PV_URL.replace(/'/g,"''")+"','pv')",function(){});});}else{updatePV(0);}
 
 })();
 
