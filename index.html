@@ -726,7 +726,7 @@ vid.pause();vid.currentTime=0;
 var vob=new IntersectionObserver(function(entries){
   entries.forEach(function(en){
     if(en.isIntersecting){vid.play().catch(function(){});}
-    else{vid.pause();vid.currentTime=0;}
+    else{vid.pause();}
   });
 },{threshold:0.3});
 vob.observe(vid);
