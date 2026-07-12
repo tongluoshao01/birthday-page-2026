@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>管理后台</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#1a1a2e;color:#eee;min-height:100vh}
+.header{background:linear-gradient(135deg,#16213e,#0f3460);padding:20px;text-align:center;border-bottom:2px solid #e94560}
+.header h1{font-size:1.4rem;font-weight:600;color:#fff}
+.header p{font-size:.8rem;opacity:.6;margin-top:4px}
+
+/* Login */
+#login-wrap{display:flex;align-items:center;justify-content:center;min-height:80vh}
+#login-box{background:#16213e;border-radius:12px;padding:40px;width:min(360px,90vw);text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+#login-box h2{margin-bottom:20px;font-size:1.2rem;color:#e94560}
+#login-box input{width:100%;padding:12px 16px;border:1px solid #333;border-radius:8px;background:#0f0f23;color:#fff;font-size:1rem;margin-bottom:16px;outline:none;transition:border .2s}
+#login-box input:focus{border-color:#e94560}
+#login-box button{width:100%;padding:12px;border:none;border-radius:8px;background:#e94560;color:#fff;font-size:1rem;cursor:pointer;transition:opacity .2s}
+#login-box button:hover{opacity:.85}
+#login-err{color:#ff6b6b;font-size:.85rem;margin-top:12px;display:none}
+
+/* Dashboard */
+#dashboard{display:none;max-width:1200px;margin:0 auto;padding:20px}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:#16213e;border-radius:10px;padding:16px;text-align:center;border:1px solid #1f2b47}
+.stat-card .num{font-size:2rem;font-weight:700;color:#e94560}
+.stat-card .label{font-size:.8rem;opacity:.6;margin-top:4px}
+
+/* Tabs */
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:8px 16px;border-radius:8px;border:1px solid #333;background:transparent;color:#aaa;cursor:pointer;font-size:.85rem;transition:all .2s}
+.tab:hover{border-color:#e94560;color:#e94560}
+.tab.active{background:#e94560;color:#fff;border-color:#e94560}
+
+/* Actions bar */
+.actions-bar{display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+.actions-bar .btn{padding:8px 16px;border-radius:8px;border:1px solid #333;background:transparent;color:#aaa;cursor:pointer;font-size:.8rem;transition:all .2s}
+.actions-bar .btn:hover{border-color:#e94560;color:#e94560}
+.actions-bar .btn.danger{border-color:#ff6b6b;color:#ff6b6b}
+.actions-bar .btn.danger:hover{background:#ff6b6b;color:#fff}
+.actions-bar .count{font-size:.8rem;opacity:.6;margin-left:auto}
+
+/* Table */
+.table-wrap{overflow-x:auto;background:#16213e;border-radius:10px;border:1px solid #1f2b47}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{background:#0f0f23;padding:12px;text-align:left;font-weight:600;color:#aaa;white-space:nowrap;position:sticky;top:0}
+td{padding:10px 12px;border-top:1px solid #1f2b47;vertical-align:top}
+tr:hover td{background:rgba(233,69,96,.05)}
+.td-comment{max-width:300px;word-break:break-all;line-height:1.5}
+.td-time{white-space:nowrap;color:#aaa;font-size:.8rem}
+.td-type{font-size:.75rem;padding:2px 8px;border-radius:4px;font-weight:600}
+.td-msg{background:#3b82f622;color:#60a5fa}
+.td-wish{background:#a855f722;color:#c084fc}
+.td-like{background:#ef444422;color:#f87171}
+.td-pv{background:#6b728022;color:#9ca3af}
+.btn-del{padding:4px 10px;border-radius:6px;border:1px solid #ff6b6b;background:transparent;color:#ff6b6b;cursor:pointer;font-size:.75rem;transition:all .2s}
+.btn-del:hover{background:#ff6b6b;color:#fff}
+.empty{text-align:center;padding:60px 20px;color:#555;font-size:.9rem}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 24px;border-radius:8px;background:#16213e;color:#fff;font-size:.85rem;box-shadow:0 4px 16px rgba(0,0,0,.4);border:1px solid #1f2b47;z-index:999;transition:opacity .3s;opacity:0;pointer-events:none}
+.toast.show{opacity:1}
+
+/* Responsive */
+@media(max-width:600px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .header h1{font-size:1.1rem}
+  td,th{padding:8px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>生日页面管理后台</h1>
+  <p>birthday-page-2026.pages.dev</p>
+</div>
+
+<div id="login-wrap">
+  <div id="login-box">
+    <h2>管理员登录</h2>
+    <input type="password" id="pass-input" placeholder="输入管理密码" autocomplete="off">
+    <button id="login-btn">登 录</button>
+    <p id="login-err"></p>
+  </div>
+</div>
+
+<div id="dashboard">
+  <div class="stats" id="stats-grid"></div>
+
+  <div class="tabs">
+    <button class="tab active" data-type="">全部</button>
+    <button class="tab" data-type="/birthday-messages">留言</button>
+    <button class="tab" data-type="/birthday-wishes">许愿</button>
+    <button class="tab" data-type="/birthday-page-like">点赞</button>
+    <button class="tab" data-type="/birthday-pageview">访问</button>
+  </div>
+
+  <div class="actions-bar">
+    <button class="btn" id="refresh-btn">刷新数据</button>
+    <button class="btn danger" id="clear-btn">清空当前分类</button>
+    <span class="count" id="count-label"></span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>类型</th>
+          <th>昵称</th>
+          <th>内容</th>
+          <th>时间</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="data-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var PASS = localStorage.getItem('bday_admin_pass') || '';
+  var currentType = '';
+  var API = '/api/admin';
+
+  function authHeaders() {
+    return { 'Content-Type': 'application/json', 'X-Admin-Pass': PASS };
+  }
+
+  function toast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(function(){ el.classList.remove('show'); }, 2000);
+  }
+
+  function showDashboard() {
+    document.getElementById('login-wrap').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadStats();
+    loadData();
+  }
+
+  function apiPost(body) {
+    return fetch(API, { method: 'POST', headers: authHeaders(), body: JSON.stringify(body) })
+      .then(function(r) {
+        if (r.status === 401) { toast('密码错误'); logout(); return null; }
+        return r.json();
+      });
+  }
+
+  function typeLabel(url) {
+    var m = { '/birthday-messages': '留言', '/birthday-wishes': '许愿', '/birthday-page-like': '点赞', '/birthday-pageview': '访问' };
+    return m[url] || url;
+  }
+
+  function typeClass(url) {
+    var m = { '/birthday-messages': 'td-msg', '/birthday-wishes': 'td-wish', '/birthday-page-like': 'td-like', '/birthday-pageview': 'td-pv' };
+    return m[url] || '';
+  }
+
+  function fmtTime(s) {
+    if (!s) return '-';
+    try { return s.replace('T',' ').replace(/\.\d+/, '').slice(0,19); } catch(e) { return s; }
+  }
+
+  function escHtml(s) {
+    var d = document.createElement('div');
+    d.textContent = s || '';
+    return d.innerHTML;
+  }
+
+  // Login
+  var passInput = document.getElementById('pass-input');
+  var loginBtn = document.getElementById('login-btn');
+  var loginErr = document.getElementById('login-err');
+
+  function doLogin() {
+    PASS = passInput.value.trim();
+    if (!PASS) { loginErr.textContent = '请输入密码'; loginErr.style.display = 'block'; return; }
+    loginBtn.textContent = '验证中...';
+    loginBtn.disabled = true;
+    apiPost({ action: 'stats' }).then(function(data) {
+      loginBtn.textContent = '登 录';
+      loginBtn.disabled = false;
+      if (data && data.rows) {
+        localStorage.setItem('bday_admin_pass', PASS);
+        showDashboard();
+      } else {
+        loginErr.textContent = '密码错误';
+        loginErr.style.display = 'block';
+      }
+    });
+  }
+
+  loginBtn.addEventListener('click', doLogin);
+  passInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+
+  function logout() {
+    localStorage.removeItem('bday_admin_pass');
+    PASS = '';
+    document.getElementById('login-wrap').style.display = 'flex';
+    document.getElementById('dashboard').style.display = 'none';
+  }
+
+  // Auto login
+  if (PASS) {
+    apiPost({ action: 'stats' }).then(function(data) {
+      if (data && data.rows) showDashboard();
+    });
+  }
+
+  // Stats
+  function loadStats() {
+    apiPost({ action: 'stats' }).then(function(data) {
+      if (!data || !data.rows) return;
+      var grid = document.getElementById('stats-grid');
+      var labels = { messages: '留言', wishes: '许愿', likes: '点赞', pageviews: '访问', total: '总计' };
+      var colors = { messages: '#60a5fa', wishes: '#c084fc', likes: '#f87171', pageviews: '#9ca3af', total: '#e94560' };
+      grid.innerHTML = data.rows.map(function(r) {
+        return '<div class="stat-card"><div class="num" style="color:' + (colors[r.type]||'#fff') + '">' + r.cnt + '</div><div class="label">' + (labels[r.type]||r.type) + '</div></div>';
+      }).join('');
+    });
+  }
+
+  // Load data
+  function loadData() {
+    var body = { action: 'list' };
+    if (currentType) body.type = currentType;
+    apiPost(body).then(function(data) {
+      if (!data || !data.rows) return;
+      var tbody = document.getElementById('data-body');
+      document.getElementById('count-label').textContent = '共 ' + data.rows.length + ' 条';
+      if (data.rows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty">暂无数据</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.rows.map(function(r) {
+        return '<tr>' +
+          '<td><span class="td-type ' + typeClass(r.url) + '">' + typeLabel(r.url) + '</span></td>' +
+          '<td>' + escHtml(r.nick || '-') + '</td>' +
+          '<td class="td-comment">' + escHtml(r.comment || '-') + '</td>' +
+          '<td class="td-time">' + fmtTime(r.inserted_at) + '</td>' +
+          '<td><button class="btn-del" data-id="' + escHtml(r.object_id) + '">删除</button></td>' +
+          '</tr>';
+      }).join('');
+    });
+  }
+
+  // Delete
+  document.getElementById('data-body').addEventListener('click', function(e) {
+    var btn = e.target.closest('.btn-del');
+    if (!btn) return;
+    if (!confirm('确定删除此条记录？')) return;
+    var id = btn.getAttribute('data-id');
+    apiPost({ action: 'delete', id: id }).then(function(data) {
+      if (data) { toast('已删除'); loadData(); loadStats(); }
+    });
+  });
+
+  // Tabs
+  document.querySelectorAll('.tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+      tab.classList.add('active');
+      currentType = tab.getAttribute('data-type');
+      loadData();
+    });
+  });
+
+  // Refresh
+  document.getElementById('refresh-btn').addEventListener('click', function() {
+    loadStats();
+    loadData();
+    toast('已刷新');
+  });
+
+  // Clear
+  document.getElementById('clear-btn').addEventListener('click', function() {
+    var typeName = typeLabel(currentType) || '全部';
+    if (!confirm('确定清空所有' + (typeName === '全部' ? '' : typeName) + '数据？此操作不可恢复！')) return;
+    apiPost({ action: 'clear', type: currentType || null }).then(function(data) {
+      if (data) { toast('已清空'); loadStats(); loadData(); }
+    });
+  });
+
+})();
+</script>
+</body>
+</html>
