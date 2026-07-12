@@ -1,7 +1,7 @@
 // Waline-compatible Comment API
 // Uses Neon HTTP SQL API (no npm dependencies needed)
 
-const CONN_STRING = 'postgresql://neondb_owner:npg_Nzu4hiFa5IDL@ep-super-mountain-aob5ntii-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require';
+const CONN_STRING = 'postgresql://neondb_owner:npg_O1l9ifqKFcbz@ep-super-mountain-aob5ntii-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require';
 const NEON_SQL_URL = 'https://ep-super-mountain-aob5ntii-pooler.c-2.ap-southeast-1.aws.neon.tech/sql';
 
 const corsHeaders = {
