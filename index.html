@@ -1148,7 +1148,7 @@ footer .counter{margin-top:8px;font-size:.75rem;opacity:.6}
 
   <p>用很多很多真心制作 <span>&#9829;</span> 生日快乐，天天快乐</p>
 
-  <p class="counter">本站已被访问 <span id="busuanzi_value_site_pv">--</span> 次</p>
+  <p class="counter">本站已被访问 <span id="page-view-count">--</span> 次</p>
 
 </footer>
 
@@ -1953,7 +1953,11 @@ msgAuthor.addEventListener('keydown',function(e){if(e.key==='Enter')msgInput.foc
 
 fetchMessages(renderMessages);
 
-
+/* ===== PAGEVIEW COUNTER ===== */
+var pvEl=document.getElementById('page-view-count');
+var PV_URL='/birthday-pageview';
+function updatePV(n){if(pvEl)pvEl.textContent=n;}
+if(WL){wlSQL("SELECT COUNT(*)::int AS cnt FROM waline_comment WHERE url='"+PV_URL.replace(/'/g,"''")+"'",function(rows,err){if(!err&&rows.length>0){updatePV(rows[0].cnt);}wlSQL("INSERT INTO waline_comment (object_id,url,comment) VALUES ('pv_'+Date.now()+'_'+Math.random().toString(36).substr(2,6),'"+PV_URL.replace(/'/g,"''")+"','pv')",function(){});});}else{updatePV(0);}
 
 })();
 
