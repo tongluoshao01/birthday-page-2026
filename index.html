@@ -1574,7 +1574,7 @@ function fetchWishes(cb){
 
   if(!WL){wishes=defaultWishes.map(function(t){return{comment:t};});if(cb)cb();return;}
 
-wlSQL("SELECT object_id AS "objectId",nick,comment,inserted_at AS "insertedAt" FROM waline_comment WHERE url='"+WL_WISH.replace(/'/g,"''")+"' ORDER BY inserted_at ASC LIMIT 100",function(rows){
+wlSQL("SELECT object_id AS \"objectId\",nick,comment,inserted_at AS \"insertedAt\" FROM waline_comment WHERE url='"+WL_WISH.replace(/'/g,"''")+"' ORDER BY inserted_at ASC LIMIT 100",function(rows){
 
     if(rows&&rows.length){wishes=rows.map(function(r){return{objectId:r.objectId,nick:r.nick||'',comment:r.comment,insertedAt:r.insertedAt};});}
 
