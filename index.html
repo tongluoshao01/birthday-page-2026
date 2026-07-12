@@ -626,7 +626,7 @@ body{font-family:Noto Serif SC,serif;color:var(--ink);background:var(--cream);-w
 
 }
 
-.video-wrapper video{width:100%;display:block;background:#000}
+.video-wrapper video{width:100%;display:block;background:#2a1f1f}
 
 .video-wrapper::after{
 
@@ -1007,8 +1007,6 @@ footer .counter{margin-top:8px;font-size:.75rem;opacity:.6}
     <div class="video-wrapper">
 
       <video id="birthday-video" playsinline muted loop preload="none" poster="assets/hero_bg.webp">
-
-        <source src="assets/birthday_video.mp4" type="video/mp4">
 
       </video>
 
@@ -1470,15 +1468,19 @@ celebrateBtn.addEventListener('click',function(){
 
 var vid=document.getElementById('birthday-video');
 
-vid.pause();vid.currentTime=0;
+var _vidSrcAdded=false;
 
 var vob=new IntersectionObserver(function(entries){
 
   entries.forEach(function(en){
 
-    if(en.isIntersecting){vid.play().catch(function(){});}
+    if(en.isIntersecting){
 
-    else{vid.pause();}
+      if(!_vidSrcAdded){var s=document.createElement('source');s.src='assets/birthday_video.mp4';s.type='video/mp4';vid.appendChild(s);vid.load();_vidSrcAdded=true;}
+
+      vid.play().catch(function(){});
+
+    }else{vid.pause();}
 
   });
 
