@@ -1546,7 +1546,7 @@ likeBtn.addEventListener('click',function(){
 
     var ln2=parseInt(localStorage.getItem('birthday_like_count')||'18')+1;localStorage.setItem('birthday_like_count',String(ln2));likeCountEl.textContent=ln2+' \u4eba\u53d1\u6765\u795d\u798f';
 
-    if(WL&&_wlOK!==false){wlSQL("INSERT INTO waline_comment (object_id,url,comment) VALUES ('lk_'+Date.now()+'_'+Math.random().toString(36).substr(2,6),'"+likePath.replace(/'/g,"''")+"','\u2764')",function(){fetchLikes();});}}
+    if(WL&&_wlOK!==false){var _oid='lk_'+Date.now()+'_'+Math.random().toString(36).substr(2,6);wlSQL("INSERT INTO waline_comment (object_id,url,comment) VALUES ('"+_oid+"','"+likePath.replace(/'/g,"''")+"','\u2764')",function(){fetchLikes();});}}
 
 });
 
