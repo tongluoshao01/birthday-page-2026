@@ -1502,7 +1502,11 @@ var likePath='/birthday-page-like';
 
 
 
+var _likeSeq=0;
+
 function fetchLikes(){
+
+  var seq=++_likeSeq;
 
   var ln=parseInt(localStorage.getItem('birthday_like_count')||'18');
 
@@ -1513,6 +1517,8 @@ function fetchLikes(){
   wlSQL("SELECT COUNT(*)::int AS cnt FROM waline_comment WHERE url='"+likePath.replace(/'/g,"''")+"'",function(rows,err){
 
     if(err){_wlOK=false;return;}
+
+    if(seq!==_likeSeq)return;
 
     var n=rows.length>0?rows[0].cnt:0;
 
