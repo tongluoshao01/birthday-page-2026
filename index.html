@@ -1006,7 +1006,7 @@ footer .counter{margin-top:8px;font-size:.75rem;opacity:.6}
 
     <div class="video-wrapper">
 
-      <video id="birthday-video" playsinline muted loop preload="metadata" poster="assets/hero_bg.webp">
+      <video id="birthday-video" playsinline muted loop preload="none" poster="assets/hero_bg.webp">
 
         <source src="assets/birthday_video.mp4" type="video/mp4">
 
@@ -1170,7 +1170,11 @@ var EK='birthday_env_opened';
 
 var WL='https://ep-super-mountain-aob5ntii-pooler.c-2.ap-southeast-1.aws.neon.tech/sql';var WL_CONN='postgresql://neondb_owner:npg_O1l9ifqKFcbz@ep-super-mountain-aob5ntii-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require';
 
+var _wlOK=null;
+
 function wlSQL(query,cb){
+
+  if(_wlOK===false){cb(null,'offline');return;}
 
   var xhr=new XMLHttpRequest();
 
@@ -1180,9 +1184,9 @@ function wlSQL(query,cb){
 
   xhr.setRequestHeader('neon-connection-string',WL_CONN);
 
-  xhr.onload=function(){try{var r=JSON.parse(xhr.responseText);cb(r.rows||[],null);}catch(e){cb(null,e);}};
+  xhr.onload=function(){try{var r=JSON.parse(xhr.responseText);_wlOK=true;cb(r.rows||[],null);}catch(e){cb(null,e);}};
 
-  xhr.onerror=function(){cb(null,'network');};
+  xhr.onerror=function(){_wlOK=false;cb(null,'network');};
 
   xhr.send(JSON.stringify({query:query}));
 
@@ -1500,11 +1504,19 @@ var likePath='/birthday-page-like';
 
 function fetchLikes(){
 
-  if(!WL){var ln=parseInt(localStorage.getItem('birthday_like_count')||'18');localStorage.setItem('birthday_like_count',String(ln));likeCountEl.textContent=ln+' 人发来祝福';return;}
+  var ln=parseInt(localStorage.getItem('birthday_like_count')||'18');
 
-  wlSQL("SELECT COUNT(*)::int AS cnt FROM waline_comment WHERE url='"+likePath.replace(/'/g,"''")+"'",function(rows){
+  likeCountEl.textContent=ln+' 人发来祝福';
+
+  if(!WL||_wlOK===false)return;
+
+  wlSQL("SELECT COUNT(*)::int AS cnt FROM waline_comment WHERE url='"+likePath.replace(/'/g,"''")+"'",function(rows,err){
+
+    if(err){_wlOK=false;return;}
 
     var n=rows.length>0?rows[0].cnt:0;
+
+    localStorage.setItem('birthday_like_count',String(n));
 
     likeCountEl.textContent=n+' 人发来祝福';
 
@@ -1520,13 +1532,15 @@ likeBtn.addEventListener('click',function(){
 
   if(cachedLike){cachedLike=null;localStorage.removeItem('birthday_liked');likeBtn.classList.remove('liked');likeText.textContent='送出祝福';
 
-    if(!WL){var ln=Math.max(0,parseInt(localStorage.getItem('birthday_like_count')||'18')-1);localStorage.setItem('birthday_like_count',String(ln));fetchLikes();return;}}
+    var ln=Math.max(0,parseInt(localStorage.getItem('birthday_like_count')||'18')-1);localStorage.setItem('birthday_like_count',String(ln));fetchLikes();
+
+    if(WL&&_wlOK!==false){wlSQL("DELETE FROM waline_comment WHERE url='"+likePath.replace(/'/g,"''")+"' AND object_id IN (SELECT object_id FROM waline_comment WHERE url='"+likePath.replace(/'/g,"''")+"' ORDER BY inserted_at DESC LIMIT 1)",function(){fetchLikes();});}}
 
   else{cachedLike='1';localStorage.setItem('birthday_liked','1');likeBtn.classList.add('liked');likeText.textContent='已祝福';
 
-    if(!WL){var ln=parseInt(localStorage.getItem('birthday_like_count')||'18')+1;localStorage.setItem('birthday_like_count',String(ln));fetchLikes();return;}
+    var ln2=parseInt(localStorage.getItem('birthday_like_count')||'18')+1;localStorage.setItem('birthday_like_count',String(ln2));fetchLikes();
 
-    wlSQL("INSERT INTO waline_comment (object_id,url) VALUES ('lk_'+Date.now()+'_'+Math.random().toString(36).substr(2,6),'"+likePath.replace(/'/g,"''")+"')",function(){fetchLikes();});}
+    if(WL&&_wlOK!==false){wlSQL("INSERT INTO waline_comment (object_id,url) VALUES ('lk_'+Date.now()+'_'+Math.random().toString(36).substr(2,6),'"+likePath.replace(/'/g,"''")+"')",function(){fetchLikes();});}}
 
 });
 
@@ -1572,9 +1586,10 @@ var wishes=[];
 
 function fetchWishes(cb){
 
-  if(!WL){wishes=defaultWishes.map(function(t){return{comment:t};});if(cb)cb();return;}
+  if(!WL||_wlOK===false){wishes=defaultWishes.map(function(t){return{comment:t};});if(cb)cb();return;}
 
-wlSQL("SELECT object_id AS \"objectId\",nick,comment,inserted_at AS \"insertedAt\" FROM waline_comment WHERE url='"+WL_WISH.replace(/'/g,"''")+"' ORDER BY inserted_at ASC LIMIT 100",function(rows){
+wlSQL("SELECT object_id AS \"objectId\",nick,comment,inserted_at AS \"insertedAt\" FROM waline_comment WHERE url='"+WL_WISH.replace(/'/g,"''")+"' ORDER BY inserted_at ASC LIMIT 100",function(rows,err){
+    if(err){_wlOK=false;wishes=defaultWishes.map(function(t){return{comment:t};});if(cb)cb();return;}
 
     if(rows&&rows.length){wishes=rows.map(function(r){return{objectId:r.objectId,nick:r.nick||'',comment:r.comment,insertedAt:r.insertedAt};});}
 
@@ -1588,7 +1603,7 @@ wlSQL("SELECT object_id AS \"objectId\",nick,comment,inserted_at AS \"insertedAt
 
 function postWish(text,cb){
 
-  if(!WL){wishes.push({comment:text});if(cb)cb();return;}
+  if(!WL||_wlOK===false){wishes.push({comment:text});if(cb)cb();return;}
 
   var oid='w_'+Date.now()+'_'+Math.random().toString(36).substr(2,6);
 
@@ -1788,7 +1803,7 @@ var messages=[];
 
 function fetchMessages(cb){
 
-  if(!WL){try{var lm=JSON.parse(localStorage.getItem('birthday_local_msgs')||'');if(lm.length){messages=lm;}else{messages=defaultMsgs.slice();}}catch(e){messages=defaultMsgs.slice();}if(cb)cb();return;}
+  if(!WL||_wlOK===false){try{var lm=JSON.parse(localStorage.getItem('birthday_local_msgs')||'');if(lm.length){messages=lm;}else{messages=defaultMsgs.slice();}}catch(e){messages=defaultMsgs.slice();}if(cb)cb();return;}
 
     wlSQL("SELECT object_id AS \"objectId\",nick,comment,inserted_at AS \"insertedAt\" FROM waline_comment WHERE url='"+WL_MSG.replace(/'/g,"\\'")+"' ORDER BY inserted_at DESC LIMIT 100",function(rows){
       if(rows&&rows.length){messages=rows.map(function(r){return{objectId:r.objectId,nick:r.nick||'',comment:r.comment,insertedAt:r.insertedAt};});}
@@ -1800,7 +1815,7 @@ function fetchMessages(cb){
 
 function postMessage(text,nick,cb){
 
-  if(!WL){var nid='local_'+Date.now();messages.unshift({nick:nick||'匿名',insertedAt:new Date().toISOString(),comment:text,objectId:nid,id:nid});saveMyId(nid,'msg');localStorage.setItem('birthday_local_msgs',JSON.stringify(messages));if(cb)cb();return;}
+  if(!WL||_wlOK===false){var nid='local_'+Date.now();messages.unshift({nick:nick||'匿名',insertedAt:new Date().toISOString(),comment:text,objectId:nid,id:nid});saveMyId(nid,'msg');localStorage.setItem('birthday_local_msgs',JSON.stringify(messages));if(cb)cb();return;}
     var safeNick=(nick||'').replace(/'/g,"\\'");
     var safeText=text.replace(/'/g,"\\'");
     var oid='m_'+Date.now()+'_'+Math.random().toString(36).substr(2,6);
@@ -1922,7 +1937,7 @@ document.addEventListener('click',function(e){if(emojiOpen&&!msgEmojiPanel.conta
 
 
 
-function addMessage(){var text=msgInput.value.trim();if(!text)return;var nick=msgAuthor.value.trim()||'';postMessage(text,nick,function(){msgInput.value='';if(WL){fetchMessages(renderMessages);}else{renderMessages();}});}
+function addMessage(){var text=msgInput.value.trim();if(!text)return;var nick=msgAuthor.value.trim()||'';msgBtn.disabled=true;msgBtn.textContent='发送中...';postMessage(text,nick,function(){msgInput.value='';msgBtn.disabled=false;msgBtn.textContent='发送';if(WL&&_wlOK!==false){fetchMessages(function(){renderMessages();var ml=document.getElementById('msg-list');if(ml)ml.scrollIntoView({behavior:'smooth',block:'start'});});}else{renderMessages();var ml2=document.getElementById('msg-list');if(ml2)ml2.scrollIntoView({behavior:'smooth',block:'start'});}});}
 
 msgBtn.addEventListener('click',addMessage);
 
