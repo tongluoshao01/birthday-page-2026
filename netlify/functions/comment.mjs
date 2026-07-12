@@ -46,8 +46,9 @@ async function handleGet(urlStr) {
 
   if (type === 'pageview') {
     try {
-      const r = await sql(`SELECT count FROM waline_pageview WHERE path = '${path.replace(/'/g, "''")}'`);
-      const count = r.rows.length > 0 ? parseInt(r.rows[0].count) : 0;
+      // 从 waline_comment 统计该路径的记录数（兼容前端点赞 POST 写入 comment 表的机制）
+      const r = await sql(`SELECT COUNT(*)::int AS cnt FROM waline_comment WHERE url = '${path.replace(/'/g, "''")}'`);
+      const count = r.rows.length > 0 ? r.rows[0].cnt : 0;
       return ok(count);
     } catch (e) {
       return ok(0);
@@ -85,6 +86,7 @@ async function handleGet(urlStr) {
 
 // POST: create comment
 async function handlePost(body) {
+  const ptype = (body.type || '').replace(/'/g, "''");
   const nick = (body.nick || body.author || '').replace(/'/g, "''");
   const comment = (body.comment || body.text || '').replace(/'/g, "''");
   const url = (body.url || body.path || '/').replace(/'/g, "''");
@@ -93,6 +95,14 @@ async function handlePost(body) {
   const ip = (body.ip || '').replace(/'/g, "''");
   const ua = (body.ua || '').replace(/'/g, "''");
   const objectId = body.objectId || ('c_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6));
+
+  // Pageview: UPSERT count in waline_pageview table
+  if (ptype === 'pageview') {
+    try {
+      await sql(`INSERT INTO waline_pageview (path, count, updated_at) VALUES ('${url}', 1, NOW()) ON CONFLICT (path) DO UPDATE SET count = waline_pageview.count + 1, updated_at = NOW()`);
+    } catch (e) {}
+    return ok({ path: url });
+  }
 
   try {
     const r = await sql(`INSERT INTO waline_comment (object_id, nick, mail, link, comment, url, ip, ua) VALUES ('${objectId}', '${nick}', '${mail}', '${link}', '${comment}', '${url}', '${ip}', '${ua}') RETURNING object_id, nick, comment, url, inserted_at`);
