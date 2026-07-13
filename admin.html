@@ -201,8 +201,8 @@ tr:hover td{background:rgba(233,69,96,.04)}
   function fmtT(s){if(!s)return'-';try{return s.replace('T',' ').replace(/\.\d+/, '').slice(0,19)}catch(e){return s}}
   function tL(u){var m={'/birthday-messages':'留言','/birthday-wishes':'许愿','/birthday-page-like':'点赞','/birthday-pageview':'访问'};return m[u]||u}
   function tC(u){var m={'/birthday-messages':'td-msg','/birthday-wishes':'td-wish','/birthday-page-like':'td-like','/birthday-pageview':'td-pv'};return m[u]||''}
-  function isReply(r){return r.pid&&r.pid!==r.object_id}
-  function isCommentLike(r){return r.url==='/birthday-messages'&&r.pid&&r.pid!==r.object_id&&r.comment==='\u2764'}
+  function isReply(r){return r.parent_id&&r.parent_id!==r.object_id}
+  function isCommentLike(r){return r.url==='/birthday-messages'&&r.parent_id&&r.parent_id!==r.object_id&&r.comment==='\u2764'}
 
   function showDash(){document.getElementById('login-wrap').style.display='none';document.getElementById('dashboard').style.display='block';loadStats();loadData();loadLikeCount()}
 
