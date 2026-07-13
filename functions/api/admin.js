@@ -105,7 +105,7 @@ export async function onRequestPost(context) {
         );
       } else {
         await runSQL(
-          `DELETE FROM waline_comment WHERE url='/birthday-page-like' ORDER BY inserted_at ASC LIMIT ${Math.abs(diff)}`,
+          `DELETE FROM waline_comment WHERE object_id IN (SELECT object_id FROM waline_comment WHERE url='/birthday-page-like' ORDER BY inserted_at ASC LIMIT ${Math.abs(diff)})`,
           env
         );
       }
