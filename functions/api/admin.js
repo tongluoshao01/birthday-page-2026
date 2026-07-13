@@ -40,7 +40,7 @@ export async function onRequestPost(context) {
 
   try {
     const body = await context.request.json();
-    const { action, id, type, nick, comment, replyTo, count } = body;
+    const { action, id, type, nick, comment, replyTo, count, pid } = body;
     const env = context.env;
 
     // === Stats ===
@@ -64,7 +64,7 @@ export async function onRequestPost(context) {
     if (action === 'list') {
       const urlFilter = type ? `WHERE url = '${safeStr(type)}'` : '';
       const result = await runSQL(
-        `SELECT object_id, nick, comment, url, inserted_at, ip, ua, pid, rid FROM waline_comment ${urlFilter} ORDER BY inserted_at DESC LIMIT 200`,
+        `SELECT object_id, nick, comment, url, inserted_at, ip, ua, parent_id, rid FROM waline_comment ${urlFilter} ORDER BY inserted_at DESC LIMIT 200`,
         env
       );
       return jsonResp(result.data, result.status);
@@ -112,9 +112,9 @@ export async function onRequestPost(context) {
       const oid = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
       const safeNick = safeStr(nick || '管理员');
       const safeComment = safeStr(comment);
-      const pid = replyTo ? `'${safeStr(replyTo)}'` : 'NULL';
+      const parent_id = replyTo ? `'${safeStr(replyTo)}'` : 'NULL';
       const result = await runSQL(
-        `INSERT INTO waline_comment (object_id,nick,comment,url,pid) VALUES ('${oid}','${safeNick}','${safeComment}','/birthday-messages',${pid}) RETURNING object_id`,
+        `INSERT INTO waline_comment (object_id,nick,comment,url,parent_id) VALUES ('${oid}','${safeNick}','${safeComment}','/birthday-messages',${parent_id}) RETURNING object_id`,
         env
       );
       return jsonResp(result.data, result.status);
@@ -135,7 +135,7 @@ export async function onRequestPost(context) {
       const oid = 'reply_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
       const safeNick = safeStr(nick || '管理员');
       const result = await runSQL(
-        `INSERT INTO waline_comment (object_id,nick,comment,url,pid,rid) VALUES ('${oid}','${safeNick}','${safeStr(comment)}','/birthday-messages','${safeStr(id)}','${safeStr(id)}') RETURNING object_id`,
+        `INSERT INTO waline_comment (object_id,nick,comment,url,parent_id,rid) VALUES ('${oid}','${safeNick}','${safeStr(comment)}','/birthday-messages','${safeStr(id)}',0) RETURNING object_id`,
         env
       );
       return jsonResp(result.data, result.status);
@@ -145,7 +145,7 @@ export async function onRequestPost(context) {
     if (action === 'likeComment' && id) {
       const oid = 'clike_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
       const result = await runSQL(
-        `INSERT INTO waline_comment (object_id,comment,url,pid) VALUES ('${oid}','\u2764','/birthday-messages','${safeStr(id)}') RETURNING object_id`,
+        `INSERT INTO waline_comment (object_id,comment,url,parent_id) VALUES ('${oid}','\u2764','/birthday-messages','${safeStr(id)}') RETURNING object_id`,
         env
       );
       return jsonResp(result.data, result.status);
