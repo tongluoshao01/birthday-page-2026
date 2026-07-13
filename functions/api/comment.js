@@ -1,9 +1,16 @@
 // Cloudflare Pages Function - proxy SQL queries to Neon
 const NEON_URL = 'https://ep-super-mountain-aob5ntii-pooler.c-2.ap-southeast-1.aws.neon.tech/sql';
-const NEON_CONN = 'postgresql://neondb_owner:npg_O1l9ifqKFcbz@ep-super-mountain-aob5ntii-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require';
 
 export async function onRequestPost(context) {
   try {
+    const NEON_CONN = context.env.NEON_CONN;
+    if (!NEON_CONN) {
+      return new Response(JSON.stringify({ error: 'NEON_CONN not configured' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     const { query } = await context.request.json();
     if (!query || typeof query !== 'string') {
       return new Response(JSON.stringify({ error: 'Missing query' }), {
