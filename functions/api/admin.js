@@ -98,13 +98,18 @@ export async function onRequestPost(context) {
       const cur = current.data.rows?.[0]?.cnt || 0;
       const diff = target - cur;
       if (diff === 0) return jsonResp({ ok: true, count: target });
-      const r = await runSQL(
-        diff > 0
-          ? `INSERT INTO waline_comment (object_id,url,comment) SELECT 'lk_admin_'||i, '/birthday-page-like', '\u2764' FROM generate_series(1,${diff}) AS i`
-          : `DELETE FROM waline_comment WHERE url='/birthday-page-like' ORDER BY inserted_at ASC LIMIT ${Math.abs(diff)}`,
-        env
-      );
-      return jsonResp({ ok: true, count: target, deleted: r.data.rowCount });
+      if (diff > 0) {
+        const r = await runSQL(
+          `INSERT INTO waline_comment (object_id,url,comment) SELECT 'lk_admin_'||i, '/birthday-page-like', '\u2764' FROM generate_series(1,${diff}) AS i`,
+          env
+        );
+      } else {
+        await runSQL(
+          `DELETE FROM waline_comment WHERE url='/birthday-page-like' ORDER BY inserted_at ASC LIMIT ${Math.abs(diff)}`,
+          env
+        );
+      }
+      return jsonResp({ ok: true, count: target });
     }
 
     // === Post message ===
