@@ -622,11 +622,11 @@ body{font-family:Noto Serif SC,serif;color:var(--ink);background:var(--cream);-w
 
   max-width:700px;margin:24px auto 0;border-radius:16px;overflow:hidden;
 
-  border:3px solid var(--ink);box-shadow:8px 8px 0 var(--ink);position:relative
+  border:3px solid var(--ink);box-shadow:8px 8px 0 var(--ink);position:relative;background:#2a1f1f
 
 }
 
-.video-wrapper video{width:100%;display:block;background:#2a1f1f}
+.video-wrapper video{width:100%;display:block;background:#2a1f1f;border-radius:13px}
 
 .video-wrapper::after{
 
@@ -635,6 +635,37 @@ body{font-family:Noto Serif SC,serif;color:var(--ink);background:var(--cream);-w
   border:1px solid rgba(255,255,255,.3) inset;border-radius:14px;pointer-events:none
 
 }
+
+.video-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(42,31,31,.7);z-index:3;opacity:0;pointer-events:none;transition:opacity .3s}
+.video-loading.show{opacity:1}
+.video-loading::after{content:'';width:36px;height:36px;border:3px solid rgba(255,255,255,.2);border-top-color:var(--coral);border-radius:50%;animation:vspin .8s linear infinite}
+@keyframes vspin{to{transform:rotate(360deg)}}
+
+.video-big-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:2;cursor:pointer;background:transparent}
+.video-big-play.hidden{display:none}
+.video-big-play-btn{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(0,0,0,.3);transition:transform .2s}
+.video-big-play-btn:hover{transform:scale(1.08)}
+.video-big-play-btn svg{width:28px;height:28px;fill:var(--ink);margin-left:3px}
+
+.video-controls{position:absolute;bottom:0;left:0;right:0;padding:10px 14px 8px;background:linear-gradient(transparent,rgba(0,0,0,.65));z-index:4;display:flex;align-items:center;gap:10px;opacity:0;transition:opacity .3s;border-radius:0 0 13px 13px}
+.video-wrapper:hover .video-controls,.video-wrapper.playing .video-controls{opacity:1}
+.video-controls.show{opacity:1}
+
+.vc-btn{background:0 0;border:0;cursor:pointer;padding:4px;color:#fff;font-size:16px;opacity:.85;transition:opacity .2s;line-height:1}
+.vc-btn:hover{opacity:1}
+.vc-btn svg{width:20px;height:20px;fill:currentColor}
+
+.vc-progress{flex:1;height:4px;background:rgba(255,255,255,.25);border-radius:2px;cursor:pointer;position:relative}
+.vc-progress:hover{height:6px}
+.vc-progress-bar{height:100%;background:var(--coral);border-radius:2px;width:0;position:relative;transition:none}
+.vc-progress-bar::after{content:'';position:absolute;right:-5px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:0 0 4px rgba(0,0,0,.3);opacity:0;transition:opacity .15s}
+.vc-progress:hover .vc-progress-bar::after{opacity:1}
+
+.vc-time{font-size:11px;color:rgba(255,255,255,.7);white-space:nowrap;min-width:80px;text-align:center;font-variant-numeric:tabular-nums}
+
+.vc-volume{display:flex;align-items:center;gap:4px}
+.vc-volume-bar{width:60px;height:4px;background:rgba(255,255,255,.25);border-radius:2px;cursor:pointer;position:relative}
+.vc-volume-fill{height:100%;background:#fff;border-radius:2px;width:100%}
 
 
 
@@ -1004,11 +1035,38 @@ footer .counter{margin-top:8px;font-size:.75rem;opacity:.6}
 
     <h2 class="section-heading-main">生日祝福视频</h2>
 
-    <div class="video-wrapper">
+    <div class="video-wrapper" id="video-wrap">
 
-      <video id="birthday-video" playsinline muted loop preload="none" poster="assets/hero_bg.webp">
+      <video id="birthday-video" playsinline preload="none" poster="assets/hero_bg.webp">
 
       </video>
+
+      <div class="video-loading" id="video-loading"></div>
+
+      <div class="video-big-play" id="video-big-play">
+        <div class="video-big-play-btn">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+      </div>
+
+      <div class="video-controls" id="video-controls">
+        <button class="vc-btn" id="vc-play" title="播放/暂停">
+          <svg viewBox="0 0 24 24" id="vc-play-icon"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="vc-progress" id="vc-progress">
+          <div class="vc-progress-bar" id="vc-progress-bar"></div>
+        </div>
+        <span class="vc-time" id="vc-time">0:00 / 0:00</span>
+        <div class="vc-volume">
+          <button class="vc-btn" id="vc-mute" title="静音/取消静音">
+            <svg viewBox="0 0 24 24" id="vc-vol-icon"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0014 8.14v2.72A2.47 2.47 0 0115.5 12zM14 3.23v2.06A6.51 6.51 0 0119 12a6.51 6.51 0 01-5 6.71v2.06A8.5 8.5 0 0014 3.23z"/></svg>
+          </button>
+          <div class="vc-volume-bar" id="vc-vol-bar"><div class="vc-volume-fill" id="vc-vol-fill"></div></div>
+        </div>
+        <button class="vc-btn" id="vc-fullscreen" title="全屏">
+          <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+        </button>
+      </div>
 
     </div>
 
@@ -1476,29 +1534,63 @@ celebrateBtn.addEventListener('click',function(){
 
 
 
-/* ===== VIDEO: lazy play on visible ===== */
+/* ===== VIDEO: enhanced player ===== */
 
 var vid=document.getElementById('birthday-video');
+var vwrap=document.getElementById('video-wrap');
+var vload=document.getElementById('video-loading');
+var vbigplay=document.getElementById('video-big-play');
+var vcontrols=document.getElementById('video-controls');
+var vcplay=document.getElementById('vc-play');
+var vcplayicon=document.getElementById('vc-play-icon');
+var vcprogress=document.getElementById('vc-progress');
+var vcprogressbar=document.getElementById('vc-progress-bar');
+var vctime=document.getElementById('vc-time');
+var vcmute=document.getElementById('vc-mute');
+var vcvolicon=document.getElementById('vc-vol-icon');
+var vcvolbar=document.getElementById('vc-vol-bar');
+var vcvolfill=document.getElementById('vc-vol-fill');
+var vcfullscreen=document.getElementById('vc-fullscreen');
+var _vidSrcAdded=false; var _vidReady=false; var _userInteracted=false;
 
-var _vidSrcAdded=false;
+function fmtTime(s){if(isNaN(s))return '0:00';var m=Math.floor(s/60);var sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec}
 
-var vob=new IntersectionObserver(function(entries){
+function updatePlayIcon(){var playing=!vid.paused;vcplayicon.innerHTML=playing?'<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>':'<path d="M8 5v14l11-7z"/>'}
 
-  entries.forEach(function(en){
+function updateProgress(){if(!vid.duration)return;var pct=vid.currentTime/vid.duration*100;vcprogressbar.style.width=pct+'%';vctime.textContent=fmtTime(vid.currentTime)+' / '+fmtTime(vid.duration)}
 
-    if(en.isIntersecting){
+function updateVolUI(){var v=vid.muted?0:vid.volume;vcvolfill.style.width=(v*100)+'%';if(vid.muted||v===0){vcvolicon.innerHTML='<path d="M16.5 12A4.5 4.5 0 0014 8.14v2.72A2.47 2.47 0 0115.5 12zM14 3.23v2.06A6.51 6.51 0 0119 12a6.51 6.51 0 01-5 6.71v2.06A8.5 8.5 0 0014 3.23z" fill="rgba(255,255,255,.4)"/><path d="M3 9v6h4l5 5V4L7 9H3z"/>'}else{vcvolicon.innerHTML='<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0014 8.14v2.72A2.47 2.47 0 0115.5 12zM14 3.23v2.06A6.51 6.51 0 0119 12a6.51 6.51 0 01-5 6.71v2.06A8.5 8.5 0 0014 3.23z"/>'}}
 
-      if(!_vidSrcAdded){var s=document.createElement('source');s.src='assets/birthday_video.mp4';s.type='video/mp4';vid.appendChild(s);vid.load();_vidSrcAdded=true;}
+function addSrc(){if(_vidSrcAdded)return;var s=document.createElement('source');s.src='assets/birthday_video.mp4';s.type='video/mp4';vid.appendChild(s);vid.load();_vidSrcAdded=true}
 
-      vid.play().catch(function(){});
+function playVideo(){if(!_vidSrcAdded)addSrc();_userInteracted=true;vbigplay.classList.add('hidden');vwrap.classList.add('playing');vid.muted=false;vid.play().catch(function(){vid.muted=true;vid.play()})}
 
-    }else{vid.pause();}
+function pauseVideo(){vid.pause();vwrap.classList.remove('playing');updatePlayIcon()}
 
-  });
+vid.addEventListener('play',function(){updatePlayIcon();vwrap.classList.add('playing')});
+vid.addEventListener('pause',function(){updatePlayIcon();vwrap.classList.remove('playing')});
+vid.addEventListener('timeupdate',updateProgress);
+vid.addEventListener('ended',function(){vid.currentTime=0;vid.play()});
+vid.addEventListener('waiting',function(){vload.classList.add('show')});
+vid.addEventListener('canplay',function(){vload.classList.remove('show');_vidReady=true});
+vid.addEventListener('loadedmetadata',updateProgress);
 
-},{threshold:0.3});
+vbigplay.addEventListener('click',playVideo);
+vid.addEventListener('click',function(){if(vid.paused)playVideo();else pauseVideo()});
+vcplay.addEventListener('click',function(){if(vid.paused)playVideo();else pauseVideo()});
 
-vob.observe(vid);
+vcprogress.addEventListener('click',function(e){if(!vid.duration)return;var rect=vcprogress.getBoundingClientRect();var pct=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));vid.currentTime=pct*vid.duration});
+
+vcmute.addEventListener('click',function(){vid.muted=!vid.muted;updateVolUI()});
+vcvolbar.addEventListener('click',function(e){var rect=vcvolbar.getBoundingClientRect();var v=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));vid.volume=v;if(v>0)vid.muted=false;updateVolUI()});
+
+vcfullscreen.addEventListener('click',function(){if(document.fullscreenElement){document.exitFullscreen()}else{vwrap.requestFullscreen().catch(function(){})}});
+
+document.addEventListener('fullscreenchange',function(){var fsIcon=document.getElementById('vc-fullscreen');if(document.fullscreenElement){fsIcon.innerHTML='<svg viewBox="0 0 24 24"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>'}else{fsIcon.innerHTML='<svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>'}});
+
+var _touchTimer;
+vwrap.addEventListener('touchstart',function(){vcontrols.classList.add('show');clearTimeout(_touchTimer);_touchTimer=setTimeout(function(){if(vid.paused)vcontrols.classList.remove('show')},3000)});
+vwrap.addEventListener('mousemove',function(){vcontrols.classList.add('show');clearTimeout(_touchTimer);_touchTimer=setTimeout(function(){if(!vid.paused)vcontrols.classList.remove('show')},2000)});
 
 
 
