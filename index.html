@@ -1148,9 +1148,23 @@ footer .counter{margin-top:8px;font-size:.75rem;opacity:.6}
 
   <p>用很多很多真心制作 <span>&#9829;</span> 生日快乐，天天快乐</p>
 
-  <p class="counter">本站已被访问 <span id="page-view-count">--</span> 次</p>
+  <p class="counter">本站已被访问 <span id="page-view-count" style="cursor:default">--</span> 次</p>
 
 </footer>
+
+<script>
+(function(){
+  var c=0, t;
+  var pv=document.getElementById('page-view-count');
+  pv.style.cursor='default';
+  pv.addEventListener('click',function(){
+    c++;
+    clearTimeout(t);
+    if(c>=5){c=0;window.location.href='/my-dear-2026.html'}
+    else{t=setTimeout(function(){c=0},1500)}
+  });
+})();
+</script>
 
 </main>
 
