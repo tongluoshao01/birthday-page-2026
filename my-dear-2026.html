@@ -433,7 +433,6 @@ tr.pinned-row:hover td{background:rgba(251,191,36,.1)}
     var c=document.getElementById('edit-comment').value.trim();
     if(!c){toast('内容不能为空');return}
     api({action:'edit',id:editTargetId,nick:n,comment:c}).then(function(d){if(d){toast('已保存');document.getElementById('edit-modal').classList.remove('show');loadData()}})});
-  });
 
   // Reply modal
   document.getElementById('reply-cancel').addEventListener('click',function(){document.getElementById('reply-modal').classList.remove('show')});
@@ -469,8 +468,8 @@ tr.pinned-row:hover td{background:rgba(251,191,36,.1)}
   document.getElementById('wish-toggle').addEventListener('click',function(){wf.classList.toggle('show');mf.classList.remove('show')});
   document.getElementById('msg-cancel').addEventListener('click',function(){mf.classList.remove('show')});
   document.getElementById('wish-cancel').addEventListener('click',function(){wf.classList.remove('show')});
-  document.getElementById('msg-submit').addEventListener('click',function(){var t=document.getElementById('msg-text').value.trim();if(!t){document.getElementById('msg-err').textContent='请输入留言';document.getElementById('msg-err').style.display='block';return}document.getElementById('msg-err').style.display='none';var n=document.getElementById('msg-nick').value.trim();var btn=this;btn.textContent='发送中...';btn.disabled=true;api({action:'postMessage',nick:n||'管理员',comment:t}).then(function(d){btn.textContent='发送留言';btn.disabled=false;if(d){toast('留言已发布');document.getElementById('msg-text').value='';document.getElementById('msg-nick').value='';mf.classList.remove('show');loadStats();loadData()}else{toast('发布失败'}})});
-  document.getElementById('wish-submit').addEventListener('click',function(){var t=document.getElementById('wish-text').value.trim();if(!t){document.getElementById('wish-err').textContent='请输入内容';document.getElementById('wish-err').style.display='block';return}document.getElementById('wish-err').style.display='none';var btn=this;btn.textContent='发送中...';btn.disabled=true;api({action:'postWish',comment:t}).then(function(d){btn.textContent='发送许愿';btn.disabled=false;if(d){toast('许愿已发布');document.getElementById('wish-text').value='';wf.classList.remove('show');loadStats();loadData()}else{toast('发布失败'}})});
+  document.getElementById('msg-submit').addEventListener('click',function(){var t=document.getElementById('msg-text').value.trim();if(!t){document.getElementById('msg-err').textContent='请输入留言';document.getElementById('msg-err').style.display='block';return}document.getElementById('msg-err').style.display='none';var n=document.getElementById('msg-nick').value.trim();var btn=this;btn.textContent='发送中...';btn.disabled=true;api({action:'postMessage',nick:n||'管理员',comment:t}).then(function(d){btn.textContent='发送留言';btn.disabled=false;if(d){toast('留言已发布');document.getElementById('msg-text').value='';document.getElementById('msg-nick').value='';mf.classList.remove('show');loadStats();loadData()}else{toast('发布失败')}})});
+  document.getElementById('wish-submit').addEventListener('click',function(){var t=document.getElementById('wish-text').value.trim();if(!t){document.getElementById('wish-err').textContent='请输入内容';document.getElementById('wish-err').style.display='block';return}document.getElementById('wish-err').style.display='none';var btn=this;btn.textContent='发送中...';btn.disabled=true;api({action:'postWish',comment:t}).then(function(d){btn.textContent='发送许愿';btn.disabled=false;if(d){toast('许愿已发布');document.getElementById('wish-text').value='';wf.classList.remove('show');loadStats();loadData()}else{toast('发布失败')}})});
 
   // Refresh
   document.getElementById('refresh-btn').addEventListener('click',function(){loadStats();loadData();loadLikeCount();loadTrend(_trendDays);toast('已刷新')});
