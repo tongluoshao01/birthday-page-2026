@@ -667,6 +667,15 @@ body{font-family:Noto Serif SC,serif;color:var(--ink);background:var(--cream);-w
 .vc-volume-bar{width:60px;height:4px;background:rgba(255,255,255,.25);border-radius:2px;cursor:pointer;position:relative}
 .vc-volume-fill{height:100%;background:#fff;border-radius:2px;width:100%}
 
+/* ===== Network hint ===== */
+.net-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;background:rgba(42,31,31,.82);flex-direction:column;gap:14px;padding:20px;text-align:center;border-radius:13px}
+.net-hint.hidden{display:none}
+.net-hint-icon{font-size:40px;opacity:.8}
+.net-hint p{color:rgba(255,255,255,.85);font-size:15px;line-height:1.7;max-width:320px;margin:0}
+.net-hint p small{display:block;margin-top:6px;font-size:12px;opacity:.5}
+.net-hint button{border:1px solid var(--coral);background:transparent;color:var(--coral);padding:8px 20px;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit;transition:all .2s}
+.net-hint button:hover{background:var(--coral);color:#fff}
+
 
 
 /* ===== ADULTHOOD ===== */
@@ -1042,6 +1051,12 @@ footer .counter{margin-top:8px;font-size:.75rem;opacity:.6}
       </video>
 
       <div class="video-loading" id="video-loading"></div>
+
+      <div class="net-hint hidden" id="net-hint">
+        <div class="net-hint-icon">&#128246;</div>
+        <p>当前网络较慢，视频加载可能需要一些时间<br><small>点击按钮即可开始加载</small></p>
+        <button id="net-hint-btn">加载视频</button>
+      </div>
 
       <div class="video-big-play" id="video-big-play">
         <div class="video-big-play-btn">
@@ -1559,9 +1574,19 @@ vid.addEventListener('timeupdate',updateProgress);
 vid.addEventListener('ended',function(){vid.currentTime=0;vid.play()});
 vid.addEventListener('waiting',function(){vload.classList.add('show')});
 vid.addEventListener('canplay',function(){vload.classList.remove('show');_vidBuffered=true});
-vid.addEventListener('loadedmetadata',function(){updateProgress();preloadVideo()});
+vid.addEventListener('loadedmetadata',function(){updateProgress();});
 
-var _vidIO=new IntersectionObserver(function(entries){entries.forEach(function(en){if(en.isIntersecting){preloadVideo();_vidIO.disconnect()}})},{threshold:0.1,rootMargin:'200px'});
+/* ===== Network-aware loading ===== */
+var nethint=document.getElementById('net-hint');
+var nethintBtn=document.getElementById('net-hint-btn');
+var _netSlow=false;
+function checkNetwork(){var conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;if(!conn)return false;var et=conn.effectiveType||'';return et==='2g'||et==='slow-2g'||et==='3g'||(conn.saveData===true)}
+function showNetHint(){_netSlow=true;nethint.classList.remove('hidden');vbigplay.classList.add('hidden');}
+function hideNetHint(){nethint.classList.add('hidden');}
+
+nethintBtn.addEventListener('click',function(){hideNetHint();preloadVideo();vbigplay.classList.remove('hidden');});
+
+var _vidIO=new IntersectionObserver(function(entries){entries.forEach(function(en){if(en.isIntersecting){if(checkNetwork()){showNetHint();}else{preloadVideo();}_vidIO.disconnect()}})},{threshold:0.1,rootMargin:'200px'});
 _vidIO.observe(vid);
 
 vbigplay.addEventListener('click',playVideo);
