@@ -1037,8 +1037,8 @@ footer .counter{margin-top:8px;font-size:.75rem;opacity:.6}
 
     <div class="video-wrapper" id="video-wrap">
 
-      <video id="birthday-video" playsinline preload="none" poster="assets/hero_bg.webp">
-
+      <video id="birthday-video" playsinline preload="metadata" poster="assets/hero_bg.webp">
+        <source src="assets/birthday_video.mp4" type="video/mp4">
       </video>
 
       <div class="video-loading" id="video-loading"></div>
@@ -1551,7 +1551,7 @@ var vcvolicon=document.getElementById('vc-vol-icon');
 var vcvolbar=document.getElementById('vc-vol-bar');
 var vcvolfill=document.getElementById('vc-vol-fill');
 var vcfullscreen=document.getElementById('vc-fullscreen');
-var _vidSrcAdded=false; var _vidReady=false; var _userInteracted=false;
+var _vidPreloaded=false; var _vidBuffered=false; var _userInteracted=false;
 
 function fmtTime(s){if(isNaN(s))return '0:00';var m=Math.floor(s/60);var sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec}
 
@@ -1561,9 +1561,9 @@ function updateProgress(){if(!vid.duration)return;var pct=vid.currentTime/vid.du
 
 function updateVolUI(){var v=vid.muted?0:vid.volume;vcvolfill.style.width=(v*100)+'%';if(vid.muted||v===0){vcvolicon.innerHTML='<path d="M16.5 12A4.5 4.5 0 0014 8.14v2.72A2.47 2.47 0 0115.5 12zM14 3.23v2.06A6.51 6.51 0 0119 12a6.51 6.51 0 01-5 6.71v2.06A8.5 8.5 0 0014 3.23z" fill="rgba(255,255,255,.4)"/><path d="M3 9v6h4l5 5V4L7 9H3z"/>'}else{vcvolicon.innerHTML='<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0014 8.14v2.72A2.47 2.47 0 0115.5 12zM14 3.23v2.06A6.51 6.51 0 0119 12a6.51 6.51 0 01-5 6.71v2.06A8.5 8.5 0 0014 3.23z"/>'}}
 
-function addSrc(){if(_vidSrcAdded)return;var s=document.createElement('source');s.src='assets/birthday_video.mp4';s.type='video/mp4';vid.appendChild(s);vid.load();_vidSrcAdded=true}
+function preloadVideo(){if(_vidPreloaded)return;_vidPreloaded=true;vid.preload='auto';var wasPaused=vid.paused;if(!vid.src)return;vid.addEventListener('canplaythrough',function once(){vid.removeEventListener('canplaythrough',once);vload.classList.remove('show');_vidBuffered=true},{once:true})}
 
-function playVideo(){if(!_vidSrcAdded)addSrc();_userInteracted=true;vbigplay.classList.add('hidden');vwrap.classList.add('playing');vid.muted=false;vid.play().catch(function(){vid.muted=true;vid.play()})}
+function playVideo(){_userInteracted=true;vbigplay.classList.add('hidden');vwrap.classList.add('playing');vid.muted=false;if(!_vidBuffered){vload.classList.add('show')}vid.play().catch(function(){vid.muted=true;vid.play()})}
 
 function pauseVideo(){vid.pause();vwrap.classList.remove('playing');updatePlayIcon()}
 
@@ -1572,8 +1572,11 @@ vid.addEventListener('pause',function(){updatePlayIcon();vwrap.classList.remove(
 vid.addEventListener('timeupdate',updateProgress);
 vid.addEventListener('ended',function(){vid.currentTime=0;vid.play()});
 vid.addEventListener('waiting',function(){vload.classList.add('show')});
-vid.addEventListener('canplay',function(){vload.classList.remove('show');_vidReady=true});
-vid.addEventListener('loadedmetadata',updateProgress);
+vid.addEventListener('canplay',function(){vload.classList.remove('show');_vidBuffered=true});
+vid.addEventListener('loadedmetadata',function(){updateProgress();preloadVideo()});
+
+var _vidIO=new IntersectionObserver(function(entries){entries.forEach(function(en){if(en.isIntersecting){preloadVideo();_vidIO.disconnect()}})},{threshold:0.1,rootMargin:'200px'});
+_vidIO.observe(vid);
 
 vbigplay.addEventListener('click',playVideo);
 vid.addEventListener('click',function(){if(vid.paused)playVideo();else pauseVideo()});
