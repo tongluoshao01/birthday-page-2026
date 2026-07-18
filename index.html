@@ -190,13 +190,39 @@ body{font-family:Noto Serif SC,serif;color:var(--ink);background:var(--cream);-w
 
 .music-button{
 
-  cursor:pointer;background:#fffaf173;border:1px solid #342a2c47;border-radius:999px;
+  cursor:pointer;background:none;border:none;
 
-  align-items:center;gap:8px;padding:10px 16px;transition:all .2s;display:flex;font-family:inherit
+  align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;padding:0;transition:all .2s;display:flex;font-family:inherit
 
 }
 
-.music-button:hover{background:var(--paper);transform:translateY(-2px)}
+.music-button:hover{transform:scale(1.08)}
+
+.music-button:hover .vinyl-record{border-color:var(--rose)}
+
+.music-button:active{transform:scale(.95)}
+
+.vinyl-record{
+
+  width:38px;height:38px;border-radius:50%;position:relative;
+
+  background:conic-gradient(from 0deg,#1a1a1a,#333,#1a1a1a,#2a2a2a,#1a1a1a,#333,#1a1a1a);
+
+  border:3px solid var(--rose);display:flex;align-items:center;justify-content:center;
+
+  box-shadow:0 2px 8px rgba(0,0,0,.15);transition:border-color .2s
+
+}
+
+.vinyl-record::after{
+
+  content:'';width:10px;height:10px;border-radius:50%;background:var(--rose);border:2px solid #fff
+
+}
+
+.vinyl-record.spinning{animation:vinylSpin 2.5s linear infinite}
+
+@keyframes vinylSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
 
 
@@ -920,9 +946,7 @@ footer .counter{margin-top:8px;font-size:.75rem;opacity:.6}
 
   <button class="music-button" id="music-btn" aria-label="播放生日旋律">
 
-    <span id="music-icon">&#9835;</span>
-
-    <span id="music-text">播放小旋律</span>
+    <div class="vinyl-record" id="vinyl-disc"></div>
 
   </button>
 
@@ -1427,9 +1451,7 @@ function typewriter(elId,text,speed,cb){
 
 var musicBtn=document.getElementById('music-btn');
 
-var musicIcon=document.getElementById('music-icon');
-
-var musicText=document.getElementById('music-text');
+var vinylDisc=document.getElementById('vinyl-disc');
 
 var audioCtx=null;
 
@@ -1451,9 +1473,9 @@ musicBtn.addEventListener('click',function(){
 
   if(src){
 
-    if(!musicPlaying){audioEl.play();musicPlaying=true;musicIcon.innerHTML='&#9835;';musicText.textContent='旋律播放中';}
+    if(!musicPlaying){audioEl.play();musicPlaying=true;vinylDisc.classList.add('spinning');}
 
-    else{audioEl.pause();musicPlaying=false;musicIcon.innerHTML='&#9835;';musicText.textContent='播放小旋律';}
+    else{audioEl.pause();musicPlaying=false;vinylDisc.classList.remove('spinning');}
 
   }else{
 
@@ -1481,9 +1503,9 @@ musicBtn.addEventListener('click',function(){
 
       });
 
-      musicPlaying=true;musicText.textContent='旋律播放中';
+      musicPlaying=true;vinylDisc.classList.add('spinning');
 
-      setTimeout(function(){musicPlaying=false;musicText.textContent='播放小旋律';},notes.length*320+300);
+      setTimeout(function(){musicPlaying=false;vinylDisc.classList.remove('spinning');},notes.length*320+300);
 
     }
 
