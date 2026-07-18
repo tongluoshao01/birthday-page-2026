@@ -907,7 +907,7 @@ footer .counter{margin-top:8px;font-size:.75rem;opacity:.6}
 
 <nav class="topbar" aria-label="页面导航">
 
-  <a class="brand" href="#top" aria-label="回到顶部"><span class="brand-star">&#10022;</span><span>今天只为你</span></a>
+  <a class="brand" href="#top" aria-label="回到顶部"><span class="brand-star" id="brand-star" title="">&#10022;</span><span>今天只为你</span></a>
 
   <button class="music-button" id="music-btn" aria-label="播放生日旋律">
 
@@ -1206,23 +1206,9 @@ footer .counter{margin-top:8px;font-size:.75rem;opacity:.6}
 
   <p>用很多很多真心制作 <span>&#9829;</span> 生日快乐，天天快乐</p>
 
-  <p class="counter">本站已被访问 <span id="page-view-count" style="cursor:default">--</span> 次</p>
+  <p class="counter">本站已被访问 <span id="page-view-count">--</span> 次</p>
 
 </footer>
-
-<script>
-(function(){
-  var c=0, t;
-  var pv=document.getElementById('page-view-count');
-  pv.style.cursor='default';
-  pv.addEventListener('click',function(){
-    c++;
-    clearTimeout(t);
-    if(c>=5){c=0;window.location.href='/my-dear-2026.html'}
-    else{t=setTimeout(function(){c=0},1500)}
-  });
-})();
-</script>
 
 </main>
 
@@ -2067,6 +2053,18 @@ var pvEl=document.getElementById('page-view-count');
 var PV_URL='/birthday-pageview';
 function updatePV(n){if(pvEl)pvEl.textContent=n;}
 if(WL){var _pvid='pv_'+Date.now()+'_'+Math.random().toString(36).substr(2,6);wlSQL("SELECT COUNT(*)::int AS cnt FROM waline_comment WHERE url='"+PV_URL.replace(/'/g,"''")+"'",function(rows,err){if(!err&&rows.length>0){updatePV(rows[0].cnt);}wlSQL("INSERT INTO waline_comment (object_id,url,comment) VALUES ('"+_pvid+"','"+PV_URL.replace(/'/g,"''")+"','pv')",function(){});});}else{updatePV(0);}
+
+/* ===== SECRET ADMIN ENTRANCE: click brand-star 5 times ===== */
+var brandStar=document.getElementById('brand-star');
+var _starC=0,_starT;
+if(brandStar){
+  brandStar.addEventListener('click',function(e){
+    e.preventDefault();e.stopPropagation();
+    _starC++;clearTimeout(_starT);
+    if(_starC>=5){_starC=0;window.location.href='/my-dear-2026.html'}
+    else{_starT=setTimeout(function(){_starC=0},1500)}
+  });
+}
 
 })();
 
