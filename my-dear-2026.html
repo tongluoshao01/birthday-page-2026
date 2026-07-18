@@ -25,7 +25,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 
 #dashboard{display:none;max-width:1200px;margin:0 auto;padding:20px}
 
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:20px}
 .stat-card{background:#16213e;border-radius:10px;padding:14px;text-align:center;border:1px solid #1f2b47}
 .stat-card .num{font-size:1.8rem;font-weight:700;color:#e94560}
 .stat-card .label{font-size:.75rem;opacity:.5;margin-top:2px}
@@ -47,13 +47,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .btn.primary:hover{background:#e94560;color:#fff}
 .btn.danger{border-color:#ff6b6b;color:#ff6b6b}
 .btn.danger:hover{background:#ff6b6b;color:#fff}
+.btn.warn{border-color:#fbbf24;color:#fbbf24}
+.btn.warn:hover{background:#fbbf24;color:#fff}
 .btn.sm{padding:3px 10px;font-size:.75rem}
+.btn.success{border-color:#34d399;color:#34d399}
+.btn.success:hover{background:#34d399;color:#fff}
 .count{font-size:.75rem;opacity:.4;margin-left:auto}
+
+.search-bar{padding:8px 16px;border-bottom:1px solid #1f2b47;display:flex;gap:8px;align-items:center}
+.search-bar input{flex:1;max-width:280px;padding:7px 12px;border:1px solid #333;border-radius:6px;background:#0f0f23;color:#fff;font-size:.85rem;outline:none}
+.search-bar input:focus{border-color:#e94560}
+.search-bar input::placeholder{color:#555}
 
 table{width:100%;border-collapse:collapse;font-size:.82rem}
 th{background:#0f0f23;padding:10px 12px;text-align:left;font-weight:600;color:#888;white-space:nowrap;position:sticky;top:0;font-size:.78rem}
 td{padding:8px 12px;border-top:1px solid #1f2b47;vertical-align:top}
 tr:hover td{background:rgba(233,69,96,.04)}
+tr.hidden-row td{opacity:.45}
+tr.pinned-row td{background:rgba(251,191,36,.06)}
+tr.pinned-row:hover td{background:rgba(251,191,36,.1)}
 .td-comment{max-width:280px;word-break:break-all;line-height:1.5}
 .td-time{white-space:nowrap;color:#666;font-size:.78rem}
 .td-type{font-size:.7rem;padding:2px 8px;border-radius:4px;font-weight:600;display:inline-block}
@@ -63,8 +75,15 @@ tr:hover td{background:rgba(233,69,96,.04)}
 .td-pv{background:#6b728022;color:#9ca3af}
 .td-reply{background:#10b98122;color:#34d399;margin-left:4px}
 .td-nick{font-size:.8rem;font-weight:500}
-.reply-line{font-size:.78rem;color:#10b981;margin-top:2px;padding:4px 8px;background:#10b98111;border-radius:4px;border-left:2px solid #10b981}
+.badge{font-size:.65rem;padding:1px 6px;border-radius:3px;margin-left:6px;font-weight:600}
+.badge-pin{background:#fbbf2422;color:#fbbf24}
+.badge-hide{background:#ff6b6b22;color:#ff6b6b}
+.td-actions{white-space:nowrap}
 .empty{text-align:center;padding:40px 20px;color:#444;font-size:.85rem}
+
+/* Checkbox */
+.cb-wrap{display:flex;align-items:center;justify-content:center}
+.cb-wrap input[type=checkbox]{width:16px;height:16px;accent-color:#e94560;cursor:pointer}
 
 /* Like setter panel */
 .like-panel{padding:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -80,6 +99,12 @@ tr:hover td{background:rgba(233,69,96,.04)}
 .post-form textarea{min-height:60px;resize:vertical;flex-basis:100%}
 .post-form .err{color:#ff6b6b;font-size:.8rem;flex-basis:100%;display:none}
 
+/* Trend chart */
+.chart-wrap{padding:20px;min-height:220px;position:relative}
+.chart-canvas{width:100%;height:200px;display:block}
+.chart-empty{text-align:center;padding:60px 20px;color:#444;font-size:.85rem}
+.trend-range{display:flex;gap:6px;padding:8px 16px;border-top:1px solid #1f2b47;justify-content:center}
+
 /* Toast */
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 24px;border-radius:8px;background:#16213e;color:#fff;font-size:.85rem;box-shadow:0 4px 16px rgba(0,0,0,.4);border:1px solid #1f2b47;z-index:999;transition:opacity .3s;opacity:0;pointer-events:none}
 .toast.show{opacity:1}
@@ -87,10 +112,12 @@ tr:hover td{background:rgba(233,69,96,.04)}
 /* Modal overlay */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:none;align-items:center;justify-content:center}
 .modal-overlay.show{display:flex}
-.modal{background:#16213e;border-radius:12px;padding:24px;width:min(440px,92vw);box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.modal{background:#16213e;border-radius:12px;padding:24px;width:min(480px,92vw);box-shadow:0 8px 32px rgba(0,0,0,.5)}
 .modal h3{font-size:1rem;margin-bottom:16px;color:#e94560}
 .modal textarea{width:100%;min-height:80px;padding:10px 12px;border:1px solid #333;border-radius:8px;background:#0f0f23;color:#fff;font-size:.9rem;resize:vertical;outline:none;font-family:inherit;margin-bottom:12px}
 .modal textarea:focus{border-color:#e94560}
+.modal input[type=text]{width:100%;padding:8px 12px;border:1px solid #333;border-radius:8px;background:#0f0f23;color:#fff;font-size:.85rem;outline:none;margin-bottom:12px}
+.modal input[type=text]:focus{border-color:#e94560}
 .modal .modal-btns{display:flex;gap:8px;justify-content:flex-end}
 .modal .orig-comment{background:#0f0f23;border-radius:8px;padding:10px;margin-bottom:12px;font-size:.85rem;color:#aaa;border-left:3px solid #3b82f6}
 
@@ -99,6 +126,7 @@ tr:hover td{background:rgba(233,69,96,.04)}
   .header h1{font-size:1rem}
   td,th{padding:6px 8px}
   .actions-bar{padding:8px 12px}
+  .td-comment{max-width:140px}
 }
 </style>
 </head>
@@ -133,6 +161,20 @@ tr:hover td{background:rgba(233,69,96,.04)}
     </div>
   </div>
 
+  <!-- Pageview Trend -->
+  <div class="section">
+    <div class="section-head"><h2>访问趋势</h2><span class="note">页面访问量统计</span></div>
+    <div class="trend-range">
+      <button class="btn sm active" data-days="7">近7天</button>
+      <button class="btn sm" data-days="14">近14天</button>
+      <button class="btn sm" data-days="30">近30天</button>
+    </div>
+    <div class="chart-wrap" id="chart-wrap">
+      <canvas class="chart-canvas" id="chart-canvas"></canvas>
+      <div class="chart-empty" id="chart-empty">加载中...</div>
+    </div>
+  </div>
+
   <!-- Messages & Wishes -->
   <div class="section">
     <div class="section-head">
@@ -143,9 +185,16 @@ tr:hover td{background:rgba(233,69,96,.04)}
         <button class="tab" data-type="/birthday-wishes">许愿</button>
       </div>
     </div>
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="搜索昵称或内容...">
+      <button class="btn sm primary" id="search-btn">搜索</button>
+      <button class="btn sm" id="search-clear">清除</button>
+    </div>
     <div class="actions-bar">
       <button class="btn primary" id="post-toggle">发布留言</button>
       <button class="btn" id="wish-toggle">发布许愿</button>
+      <button class="btn success" id="export-btn">导出CSV</button>
+      <button class="btn danger" id="batch-del-btn" style="display:none">删除选中</button>
       <button class="btn" id="refresh-btn">刷新</button>
       <button class="btn danger" id="clear-btn">清空当前</button>
       <span class="count" id="count-label"></span>
@@ -165,7 +214,7 @@ tr:hover td{background:rgba(233,69,96,.04)}
     </div>
     <div style="overflow-x:auto">
       <table>
-        <thead><tr><th>类型</th><th>昵称</th><th>内容</th><th>时间</th><th>操作</th></tr></thead>
+        <thead><tr><th><input type="checkbox" id="cb-all"></th><th>状态</th><th>类型</th><th>昵称</th><th>内容</th><th>时间</th><th>操作</th></tr></thead>
         <tbody id="data-body"></tbody>
       </table>
     </div>
@@ -178,10 +227,25 @@ tr:hover td{background:rgba(233,69,96,.04)}
     <h3>回复评论</h3>
     <div class="orig-comment" id="reply-orig"></div>
     <textarea id="reply-text" placeholder="输入回复内容"></textarea>
-    <input type="text" id="reply-nick" placeholder="回复昵称（默认：管理员）" style="width:100%;padding:8px 12px;border:1px solid #333;border-radius:6px;background:#0f0f23;color:#fff;font-size:.85rem;outline:none;margin-bottom:12px">
+    <input type="text" id="reply-nick" placeholder="回复昵称（默认：管理员）">
     <div class="modal-btns">
       <button class="btn" id="reply-cancel">取消</button>
       <button class="btn primary" id="reply-submit">发送回复</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <h3>编辑内容</h3>
+    <label style="font-size:.8rem;color:#888;display:block;margin-bottom:4px">昵称</label>
+    <input type="text" id="edit-nick" placeholder="昵称">
+    <label style="font-size:.8rem;color:#888;display:block;margin-bottom:4px">内容</label>
+    <textarea id="edit-comment" placeholder="内容"></textarea>
+    <div class="modal-btns">
+      <button class="btn" id="edit-cancel">取消</button>
+      <button class="btn primary" id="edit-submit">保存</button>
     </div>
   </div>
 </div>
@@ -190,10 +254,13 @@ tr:hover td{background:rgba(233,69,96,.04)}
 
 <script>
 (function(){
-  var PASS = localStorage.getItem('bday_admin_pass') || '';
-  var currentType = '';
-  var replyTargetId = null;
-  var API = '/api/admin';
+  var PASS=localStorage.getItem('bday_admin_pass')||'';
+  var currentType='';
+  var currentKeyword='';
+  var replyTargetId=null;
+  var editTargetId=null;
+  var selectedIds={};
+  var API='/api/admin';
 
   function h(o){return{'Content-Type':'application/json','X-Admin-Pass':PASS}}
   function toast(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(function(){e.classList.remove('show')},2500)}
@@ -201,10 +268,10 @@ tr:hover td{background:rgba(233,69,96,.04)}
   function fmtT(s){if(!s)return'-';try{return s.replace('T',' ').replace(/\.\d+/, '').slice(0,19)}catch(e){return s}}
   function tL(u){var m={'/birthday-messages':'留言','/birthday-wishes':'许愿','/birthday-page-like':'点赞','/birthday-pageview':'访问'};return m[u]||u}
   function tC(u){var m={'/birthday-messages':'td-msg','/birthday-wishes':'td-wish','/birthday-page-like':'td-like','/birthday-pageview':'td-pv'};return m[u]||''}
-  function isReply(r){return r.parent_id&&r.parent_id!==r.object_id}
-  function isCommentLike(r){return r.url==='/birthday-messages'&&r.parent_id&&r.parent_id!==r.object_id&&r.comment==='\u2764'}
+  function isReply(r){return r.parent_id&&r.parent_id!==r.object_id&&r.parent_id!==''}
+  function isCommentLike(r){return r.url==='/birthday-messages'&&isReply(r)&&r.comment==='\u2764'}
 
-  function showDash(){document.getElementById('login-wrap').style.display='none';document.getElementById('dashboard').style.display='block';loadStats();loadData();loadLikeCount()}
+  function showDash(){document.getElementById('login-wrap').style.display='none';document.getElementById('dashboard').style.display='block';loadStats();loadData();loadLikeCount();loadTrend(7)}
 
   function api(body){return fetch(API,{method:'POST',headers:h(),body:JSON.stringify(body)}).then(function(r){if(r.status===401){toast('认证失败');logout();return null}return r.json()})}
 
@@ -218,20 +285,127 @@ tr:hover td{background:rgba(233,69,96,.04)}
   if(PASS){api({action:'stats'}).then(function(d){if(d&&d.rows)showDash()})}
 
   // Stats
-  function loadStats(){api({action:'stats'}).then(function(d){if(!d||!d.rows)return;var g=document.getElementById('stats-grid');var l={messages:'留言',wishes:'许愿',likes:'点赞',pageviews:'访问',total:'总计'};var c={messages:'#60a5fa',wishes:'#c084fc',likes:'#f87171',pageviews:'#9ca3af',total:'#e94560'};g.innerHTML=d.rows.map(function(r){return'<div class="stat-card"><div class="num" style="color:'+(c[r.type]||'#fff')+'">'+r.cnt+'</div><div class="label">'+(l[r.type]||r.type)+'</div></div>'}).join('')})}
+  function loadStats(){api({action:'stats'}).then(function(d){if(!d||!d.rows)return;var g=document.getElementById('stats-grid');var l={messages:'留言',wishes:'许愿',likes:'点赞',pageviews:'访问',total:'总计',hidden:'隐藏',pinned:'置顶'};var c={messages:'#60a5fa',wishes:'#c084fc',likes:'#f87171',pageviews:'#9ca3af',total:'#e94560',hidden:'#ff6b6b',pinned:'#fbbf24'};g.innerHTML=d.rows.map(function(r){return'<div class="stat-card"><div class="num" style="color:'+(c[r.type]||'#fff')+'">'+r.cnt+'</div><div class="label">'+(l[r.type]||r.type)+'</div></div>'}).join('')})}
 
   // Like count
   function loadLikeCount(){api({action:'stats'}).then(function(d){if(!d||!d.rows)return;var likeRow=d.rows.find(function(r){return r.type==='likes'});var cnt=likeRow?likeRow.cnt:0;document.getElementById('like-set-input').value=cnt;document.getElementById('like-set-status').textContent='当前: '+cnt+' 人'})}
   document.getElementById('like-set-btn').addEventListener('click',function(){var v=parseInt(document.getElementById('like-set-input').value);if(isNaN(v)||v<0){toast('请输入有效数字');return}var btn=this;btn.textContent='设置中...';btn.disabled=true;api({action:'setLikes',count:v}).then(function(d){btn.textContent='应用';btn.disabled=false;if(d){toast('点赞数已设为 '+v+' 人');loadStats();loadLikeCount()}else{toast('设置失败')}})});
 
+  // === TREND CHART (pure Canvas, no dependencies) ===
+  var _trendDays=7;
+  function loadTrend(days){_trendDays=days;api({action:'pvTrend',days:days}).then(function(d){drawChart(d&&d.rows?d.rows:[])})}
+  function drawChart(rows){
+    var canvas=document.getElementById('chart-canvas');
+    var emptyEl=document.getElementById('chart-empty');
+    var wrap=document.getElementById('chart-wrap');
+    if(!rows.length){emptyEl.style.display='block';emptyEl.textContent='暂无访问数据';canvas.style.display='none';return}
+    emptyEl.style.display='none';canvas.style.display='block';
+    var dpr=window.devicePixelRatio||1;
+    var rect=canvas.getBoundingClientRect();
+    canvas.width=rect.width*dpr;canvas.height=200*dpr;
+    var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+    var W=rect.width,H=200;
+    var pad={t:20,r:20,b:40,l:50};
+    var chartW=W-pad.l-pad.r,chartH=H-pad.t-pad.b;
+
+    // Build full date range
+    var dataMap={};rows.forEach(function(r){var ds=r.day||'';dataMap[ds]=r.cnt});
+    var dates=[],labels=[];
+    for(var i=_trendDays-1;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);var ds=d.toISOString().slice(0,10);dates.push(ds);labels.push((d.getMonth()+1)+'/'+d.getDate())}
+    var vals=dates.map(function(ds){return dataMap[ds]||0});
+    var maxV=Math.max.apply(null,vals.concat([1]));
+
+    // Grid lines
+    ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=1;
+    for(var g=0;g<=4;g++){var y=pad.t+chartH-chartH*(g/4);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='11px sans-serif';ctx.textAlign='right';ctx.fillText(Math.round(maxV*g/4),pad.l-8,y+4)}
+
+    // Area fill
+    var gradient=ctx.createLinearGradient(0,pad.t,0,pad.t+chartH);
+    gradient.addColorStop(0,'rgba(233,69,96,0.3)');gradient.addColorStop(1,'rgba(233,69,96,0.02)');
+    ctx.beginPath();ctx.moveTo(pad.l,pad.t+chartH);
+    dates.forEach(function(ds,i){var x=pad.l+(i/(dates.length-1))*chartW;var y=pad.t+chartH-(vals[i]/maxV)*chartH;if(i===0)ctx.lineTo(x,y);else ctx.lineTo(x,y)});
+    ctx.lineTo(pad.l+chartW,pad.t+chartH);ctx.closePath();ctx.fillStyle=gradient;ctx.fill();
+
+    // Line
+    ctx.beginPath();ctx.strokeStyle='#e94560';ctx.lineWidth=2.5;ctx.lineJoin='round';
+    dates.forEach(function(ds,i){var x=pad.l+(i/(dates.length-1))*chartW;var y=pad.t+chartH-(vals[i]/maxV)*chartH;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});
+    ctx.stroke();
+
+    // Dots + labels
+    dates.forEach(function(ds,i){
+      var x=pad.l+(i/(dates.length-1))*chartW;
+      var y=pad.t+chartH-(vals[i]/maxV)*chartH;
+      ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);ctx.fillStyle='#e94560';ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='10px sans-serif';ctx.textAlign='center';
+      ctx.fillText(labels[i],x,H-pad.b+16);
+      if(vals[i]>0){ctx.fillStyle='#fff';ctx.fillText(vals[i],x,y-10)}
+    });
+  }
+
+  document.querySelector('.trend-range').addEventListener('click',function(e){
+    var btn=e.target.closest('[data-days]');
+    if(!btn)return;
+    this.querySelectorAll('.btn').forEach(function(b){b.classList.remove('active')});
+    btn.classList.add('active');
+    loadTrend(parseInt(btn.dataset.days));
+  });
+
+  // === SELECTION ===
+  function updateBatchBtn(){var cnt=Object.keys(selectedIds).length;var btn=document.getElementById('batch-del-btn');if(cnt>0){btn.style.display='';btn.textContent='删除选中 ('+cnt+')'}else{btn.style.display='none'}}
+  document.getElementById('cb-all').addEventListener('change',function(){
+    var checked=this.checked;
+    var cbs=document.querySelectorAll('.row-cb');
+    cbs.forEach(function(cb){cb.checked=checked;if(checked){selectedIds[cb.dataset.id]=true}else{delete selectedIds[cb.dataset.id]}});
+    updateBatchBtn();
+  });
+  document.getElementById('batch-del-btn').addEventListener('click',function(){
+    var ids=Object.keys(selectedIds);
+    if(!ids.length)return;
+    if(!confirm('确定删除选中的 '+ids.length+' 条？'))return;
+    api({action:'batchDelete',ids:ids}).then(function(d){if(d){selectedIds={};updateBatchBtn();document.getElementById('cb-all').checked=false;toast('已删除 '+ids.length+' 条');loadStats();loadData()}})});
+  function toggleSelect(id,checked){if(checked){selectedIds[id]=true}else{delete selectedIds[id]}updateBatchBtn()}
+
   // Load data
-  function loadData(){var body={action:'list'};if(currentType)body.type=currentType;api(body).then(function(d){if(!d||!d.rows)return;var tb=document.getElementById('data-body');document.getElementById('count-label').textContent='共 '+d.rows.length+' 条';if(!d.rows.length){tb.innerHTML='<tr><td colspan="5" class="empty">暂无数据</td></tr>';return}tb.innerHTML=d.rows.map(function(r){var typeHtml='<span class="td-type '+tC(r.url)+'">'+tL(r.url)+'</span>';if(isCommentLike(r))typeHtml='<span class="td-type" style="background:#fbbf2422;color:#fbbf24">赞</span>';var nickCol=r.nick?'<span class="td-nick">'+esc(r.nick)+'</span>':'-';var commentHtml=esc(r.comment||'-');return'<tr><td>'+typeHtml+'</td><td>'+nickCol+'</td><td class="td-comment">'+commentHtml+'</td><td class="td-time">'+fmtT(r.inserted_at)+'</td><td>'+actionBtns(r)+'</td></tr>'}).join('')})}
+  function loadData(){
+    var body={action:'list'};
+    if(currentType)body.type=currentType;
+    if(currentKeyword)body.keyword=currentKeyword;
+    api(body).then(function(d){
+      if(!d||!d.rows)return;
+      var tb=document.getElementById('data-body');
+      document.getElementById('count-label').textContent='共 '+d.rows.length+' 条';
+      if(!d.rows.length){tb.innerHTML='<tr><td colspan="7" class="empty">暂无数据</td></tr>';return}
+      tb.innerHTML=d.rows.map(function(r){
+        var cls='';
+        if(r.status===0)cls='hidden-row';
+        if(r.pinned)cls=(cls?' ':'')+'pinned-row';
+        var typeHtml='<span class="td-type '+tC(r.url)+'">'+tL(r.url)+'</span>';
+        if(isCommentLike(r))typeHtml='<span class="td-type" style="background:#fbbf2422;color:#fbbf24">赞</span>';
+        var badges='';
+        if(r.pinned)badges+='<span class="badge badge-pin">置顶</span>';
+        if(r.status===0)badges+='<span class="badge badge-hide">隐藏</span>';
+        var nickCol=r.nick?'<span class="td-nick">'+esc(r.nick)+'</span>':'-';
+        var commentHtml=esc(r.comment||'-');
+        return'<tr class="'+cls+'"><td class="cb-wrap"><input type="checkbox" class="row-cb" data-id="'+esc(r.object_id)+'" '+(selectedIds[r.object_id]?'checked':'')+'></td><td>'+badges+'</td><td>'+typeHtml+'</td><td>'+nickCol+'</td><td class="td-comment">'+commentHtml+'</td><td class="td-time">'+fmtT(r.inserted_at)+'</td><td class="td-actions">'+actionBtns(r)+'</td></tr>';
+      }).join('');
+      // Re-bind checkboxes
+      tb.querySelectorAll('.row-cb').forEach(function(cb){cb.addEventListener('change',function(){toggleSelect(this.dataset.id,this.checked)})});
+    });
+  }
 
   function actionBtns(r){
     var btns='<button class="btn sm danger btn-del" data-id="'+esc(r.object_id)+'">删除</button>';
-    if(r.url==='/birthday-messages'&&!isCommentLike(r)){
-      btns+='<button class="btn sm btn-reply" data-id="'+esc(r.object_id)+'" data-nick="'+esc(r.nick||'')+'" data-comment="'+esc((r.comment||'').substring(0,80))+'">回复</button>';
+    if((r.url==='/birthday-messages'||r.url==='/birthday-wishes')&&!isCommentLike(r)){
+      btns+='<button class="btn sm btn-edit" data-id="'+esc(r.object_id)+'" data-nick="'+esc(r.nick||'')+'" data-comment="'+esc((r.comment||'').replace(/"/g,'&quot;').substring(0,200))+'">编辑</button>';
+      if(r.url==='/birthday-messages'){
+        btns+='<button class="btn sm btn-reply" data-id="'+esc(r.object_id)+'" data-nick="'+esc(r.nick||'')+'" data-comment="'+esc((r.comment||'').replace(/"/g,'&quot;').substring(0,80))+'">回复</button>';
+      }
       if(!isReply(r))btns+='<button class="btn sm btn-clike" data-id="'+esc(r.object_id)+'">点赞</button>';
+    }
+    // Pin/Hide buttons for messages and wishes
+    if(r.url==='/birthday-messages'||r.url==='/birthday-wishes'){
+      btns+='<button class="btn sm '+(r.pinned?'warn':'success')+' btn-pin" data-id="'+esc(r.object_id)+'">'+(r.pinned?'取消置顶':'置顶')+'</button>';
+      btns+='<button class="btn sm '+(r.status===0?'success':'warn')+' btn-hide" data-id="'+esc(r.object_id)+'">'+(r.status===0?'显示':'隐藏')+'</button>';
     }
     return btns;
   }
@@ -239,19 +413,55 @@ tr:hover td{background:rgba(233,69,96,.04)}
   // Table actions
   document.getElementById('data-body').addEventListener('click',function(e){
     var del=e.target.closest('.btn-del');
-    if(del){if(!confirm('确定删除？'))return;api({action:'delete',id:del.dataset.id}).then(function(d){if(d){toast('已删除');loadStats();loadData();loadLikeCount()}});return}
+    if(del){if(!confirm('确定删除？'))return;api({action:'delete',id:del.dataset.id}).then(function(d){if(d){delete selectedIds[del.dataset.id];updateBatchBtn();toast('已删除');loadStats();loadData();loadLikeCount()}});return}
+    var edit=e.target.closest('.btn-edit');
+    if(edit){editTargetId=edit.dataset.id;document.getElementById('edit-nick').value=edit.dataset.nick;document.getElementById('edit-comment').value=edit.dataset.comment.replace(/&quot;/g,'"');document.getElementById('edit-modal').classList.add('show');return}
+    var pin=e.target.closest('.btn-pin');
+    if(pin){api({action:'togglePin',id:pin.dataset.id}).then(function(d){if(d){toast(d.rows[0].pinned?'已置顶':'已取消置顶');loadStats();loadData()}});return}
+    var hide=e.target.closest('.btn-hide');
+    if(hide){api({action:'toggleHide',id:hide.dataset.id}).then(function(d){if(d){toast(d.rows[0].status===0?'已隐藏':'已显示');loadStats();loadData()}});return}
     var reply=e.target.closest('.btn-reply');
-    if(reply){replyTargetId=reply.dataset.id;document.getElementById('reply-orig').textContent=reply.dataset.nick+': '+reply.dataset.comment;document.getElementById('reply-text').value='';document.getElementById('reply-modal').classList.add('show');return}
+    if(reply){replyTargetId=reply.dataset.id;document.getElementById('reply-orig').textContent=reply.dataset.nick.replace(/&quot;/g,'"')+': '+reply.dataset.comment.replace(/&quot;/g,'"');document.getElementById('reply-text').value='';document.getElementById('reply-modal').classList.add('show');return}
     var clike=e.target.closest('.btn-clike');
     if(clike){api({action:'likeComment',id:clike.dataset.id}).then(function(d){if(d){toast('已点赞');loadStats();loadData()}});return}
+  });
+
+  // Edit modal
+  document.getElementById('edit-cancel').addEventListener('click',function(){document.getElementById('edit-modal').classList.remove('show')});
+  document.getElementById('edit-submit').addEventListener('click',function(){
+    var n=document.getElementById('edit-nick').value.trim();
+    var c=document.getElementById('edit-comment').value.trim();
+    if(!c){toast('内容不能为空');return}
+    api({action:'edit',id:editTargetId,nick:n,comment:c}).then(function(d){if(d){toast('已保存');document.getElementById('edit-modal').classList.remove('show');loadData()}})});
   });
 
   // Reply modal
   document.getElementById('reply-cancel').addEventListener('click',function(){document.getElementById('reply-modal').classList.remove('show')});
   document.getElementById('reply-submit').addEventListener('click',function(){var t=document.getElementById('reply-text').value.trim();if(!t){toast('请输入回复内容');return}var n=document.getElementById('reply-nick').value.trim();api({action:'reply',id:replyTargetId,nick:n||'管理员',comment:t}).then(function(d){if(d){toast('回复成功');document.getElementById('reply-modal').classList.remove('show');loadStats();loadData()}})});
 
+  // Search
+  function doSearch(){currentKeyword=document.getElementById('search-input').value.trim();loadData()}
+  document.getElementById('search-btn').addEventListener('click',doSearch);
+  document.getElementById('search-input').addEventListener('keydown',function(e){if(e.key==='Enter')doSearch()});
+  document.getElementById('search-clear').addEventListener('click',function(){document.getElementById('search-input').value='';currentKeyword='';loadData()});
+
+  // Export
+  document.getElementById('export-btn').addEventListener('click',function(){
+    var body={action:'export'};
+    if(currentType)body.type=currentType;
+    if(currentKeyword)body.keyword=currentKeyword;
+    fetch(API,{method:'POST',headers:h(),body:JSON.stringify(body)}).then(function(r){
+      if(r.status===401){toast('认证失败');return}
+      return r.blob();
+    }).then(function(blob){
+      if(!blob)return;
+      var url=URL.createObjectURL(blob);
+      var a=document.createElement('a');a.href=url;a.download='admin_export.csv';a.click();URL.revokeObjectURL(url);toast('导出成功');
+    });
+  });
+
   // Tabs
-  document.getElementById('content-tabs').addEventListener('click',function(e){var tab=e.target.closest('.tab');if(!tab)return;this.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});tab.classList.add('active');currentType=tab.dataset.type;loadData()});
+  document.getElementById('content-tabs').addEventListener('click',function(e){var tab=e.target.closest('.tab');if(!tab)return;this.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});tab.classList.add('active');currentType=tab.dataset.type;selectedIds={};updateBatchBtn();loadData()});
 
   // Post message
   var mf=document.getElementById('msg-form'),wf=document.getElementById('wish-form');
@@ -259,13 +469,16 @@ tr:hover td{background:rgba(233,69,96,.04)}
   document.getElementById('wish-toggle').addEventListener('click',function(){wf.classList.toggle('show');mf.classList.remove('show')});
   document.getElementById('msg-cancel').addEventListener('click',function(){mf.classList.remove('show')});
   document.getElementById('wish-cancel').addEventListener('click',function(){wf.classList.remove('show')});
-  document.getElementById('msg-submit').addEventListener('click',function(){var t=document.getElementById('msg-text').value.trim();if(!t){document.getElementById('msg-err').textContent='请输入留言';document.getElementById('msg-err').style.display='block';return}document.getElementById('msg-err').style.display='none';var n=document.getElementById('msg-nick').value.trim();var btn=this;btn.textContent='发送中...';btn.disabled=true;api({action:'postMessage',nick:n||'管理员',comment:t}).then(function(d){btn.textContent='发送留言';btn.disabled=false;if(d){toast('留言已发布');document.getElementById('msg-text').value='';document.getElementById('msg-nick').value='';mf.classList.remove('show');loadStats();loadData()}else{toast('发布失败')}})});
-  document.getElementById('wish-submit').addEventListener('click',function(){var t=document.getElementById('wish-text').value.trim();if(!t){document.getElementById('wish-err').textContent='请输入内容';document.getElementById('wish-err').style.display='block';return}document.getElementById('wish-err').style.display='none';var btn=this;btn.textContent='发送中...';btn.disabled=true;api({action:'postWish',comment:t}).then(function(d){btn.textContent='发送许愿';btn.disabled=false;if(d){toast('许愿已发布');document.getElementById('wish-text').value='';wf.classList.remove('show');loadStats();loadData()}else{toast('发布失败')}})});
+  document.getElementById('msg-submit').addEventListener('click',function(){var t=document.getElementById('msg-text').value.trim();if(!t){document.getElementById('msg-err').textContent='请输入留言';document.getElementById('msg-err').style.display='block';return}document.getElementById('msg-err').style.display='none';var n=document.getElementById('msg-nick').value.trim();var btn=this;btn.textContent='发送中...';btn.disabled=true;api({action:'postMessage',nick:n||'管理员',comment:t}).then(function(d){btn.textContent='发送留言';btn.disabled=false;if(d){toast('留言已发布');document.getElementById('msg-text').value='';document.getElementById('msg-nick').value='';mf.classList.remove('show');loadStats();loadData()}else{toast('发布失败'}})});
+  document.getElementById('wish-submit').addEventListener('click',function(){var t=document.getElementById('wish-text').value.trim();if(!t){document.getElementById('wish-err').textContent='请输入内容';document.getElementById('wish-err').style.display='block';return}document.getElementById('wish-err').style.display='none';var btn=this;btn.textContent='发送中...';btn.disabled=true;api({action:'postWish',comment:t}).then(function(d){btn.textContent='发送许愿';btn.disabled=false;if(d){toast('许愿已发布');document.getElementById('wish-text').value='';wf.classList.remove('show');loadStats();loadData()}else{toast('发布失败'}})});
 
   // Refresh
-  document.getElementById('refresh-btn').addEventListener('click',function(){loadStats();loadData();loadLikeCount();toast('已刷新')});
+  document.getElementById('refresh-btn').addEventListener('click',function(){loadStats();loadData();loadLikeCount();loadTrend(_trendDays);toast('已刷新')});
   // Clear
   document.getElementById('clear-btn').addEventListener('click',function(){var t=tL(currentType)||'全部';if(!confirm('确定清空所有'+(t==='全部'?'':' '+t)+'数据？不可恢复！'))return;api({action:'clear',type:currentType||null}).then(function(d){if(d){toast('已清空');loadStats();loadData();loadLikeCount()}})});
+
+  // Resize chart
+  window.addEventListener('resize',function(){loadTrend(_trendDays)});
 })();
 </script>
 </body>
